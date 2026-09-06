@@ -1,1 +1,54 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/geist';
+
+@theme {
+  --color-paper: #f5f1e8;
+  --color-paper-2: #ece6d9;
+  --color-paper-pure: #fbf9f4;
+  --color-ink: #1b1713;
+  --color-ink-2: #2a241d;
+  --color-ink-mut: #5f574c;
+  --color-ink-soft: #8c8476;
+  --color-accent: #b5482a;
+  --color-accent-hover: #963a21;
+  --color-accent-soft: #f1d9cf;
+  --color-line: rgb(27 23 19 / 0.12);
+  --color-line-2: rgb(27 23 19 / 0.07);
+
+  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-body: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --text-display-xl: clamp(2.75rem, 6vw, 5rem);
+  --text-display-lg: clamp(2rem, 4vw, 3.25rem);
+  --text-display-md: clamp(1.5rem, 2.6vw, 2.125rem);
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-paper text-ink font-body antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  h1, h2, h3 { @apply font-display tracking-tight; font-variation-settings: 'opsz' 144, 'SOFT' 50; }
+  ::selection { @apply bg-accent-soft text-ink; }
+  a:focus-visible, button:focus-visible { @apply outline-2 outline-offset-2 outline-accent; }
+}
+
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+  .btn { @apply inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition; }
+  .btn-primary { @apply inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition bg-accent text-paper-pure hover:bg-accent-hover; }
+  .btn-ghost { @apply inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition border border-line text-ink hover:border-ink; }
+  .eyebrow { @apply text-xs font-medium uppercase tracking-[0.18em] text-ink-mut; }
+  .prose-site { @apply max-w-prose text-lg leading-relaxed text-ink-2; }
+  .prose-site p + p { @apply mt-5; }
+  .prose-site h2 { @apply mt-12 mb-4 text-display-md; }
+  .prose-site h3 { @apply mt-8 mb-3 text-xl; }
+  .prose-site a { @apply text-accent underline underline-offset-4 hover:text-accent-hover; }
+  .prose-site ul { @apply my-5 list-disc pl-6; }
+  .prose-site pre { @apply my-6 overflow-x-auto rounded-lg border border-line bg-paper-pure p-4 text-sm; }
+  .prose-site code:not(pre code) { @apply rounded bg-paper-2 px-1.5 py-0.5 text-[0.9em]; }
+  .prose-site img { @apply my-8 rounded-lg; }
+  .prose-site blockquote { @apply my-6 border-l-2 border-accent pl-5 italic text-ink-mut; }
+}

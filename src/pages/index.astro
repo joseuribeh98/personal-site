@@ -1,19 +1,12 @@
 ---
-import '../styles/global.css';
+import Base from '../layouts/Base.astro';
+import { t } from '../i18n/ui';
+const tr = t('en');
 ---
-
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="robots" content="noindex" />
-		<title>Jose Uribe — coming soon</title>
-	</head>
-	<body class="min-h-screen grid place-items-center bg-stone-100 text-stone-900">
-		<main class="text-center">
-			<h1 class="text-4xl font-semibold tracking-tight">Jose Uribe</h1>
-			<p class="mt-2 text-stone-600">joseuribe.dev — building.</p>
-		</main>
-	</body>
-</html>
+<Base locale="en" title="Jose Uribe — Full-stack developer" description={tr('home.sub')}>
+  <section class="wrap py-24">
+    <p class="eyebrow">{tr('home.eyebrow')}</p>
+    <h1 class="mt-4 max-w-4xl text-display-xl">{tr('home.h1')}</h1>
+    <p class="mt-6 max-w-2xl text-xl text-ink-mut">{tr('home.sub')}</p>
+  </section>
+</Base>

@@ -1,0 +1,24 @@
+---
+import { t, type Locale } from '../i18n/ui';
+import { site } from '../config/site';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+const year = new Date().getFullYear();
+---
+<footer class="mt-24 border-t border-line">
+  <div class="wrap flex flex-col gap-6 py-10 text-sm text-ink-mut md:flex-row md:items-center md:justify-between">
+    <div>
+      <p class="font-display text-lg text-ink">Jose Uribe</p>
+      <p>{tr('footer.location')}</p>
+    </div>
+    <p class="max-w-md">{tr('footer.built')}</p>
+    <ul class="flex gap-5">
+      <li><a href={`mailto:${site.email}`} class="hover:text-ink">Email</a></li>
+      <li><a href={site.upwork} rel="me noopener" target="_blank" class="hover:text-ink" data-outbound="upwork">Upwork</a></li>
+      <li><a href={site.github} rel="me noopener" target="_blank" class="hover:text-ink" data-outbound="github">GitHub</a></li>
+      <li><a href={site.linkedin} rel="me noopener" target="_blank" class="hover:text-ink" data-outbound="linkedin">LinkedIn</a></li>
+    </ul>
+  </div>
+  <div class="wrap pb-8 text-xs text-ink-soft">© {year} Jose Uribe. {tr('footer.rights')}</div>
+</footer>
