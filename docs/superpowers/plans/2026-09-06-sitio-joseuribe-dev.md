@@ -1159,7 +1159,7 @@ git commit -m "feat(content): Sanity types, GROQ queries, fetchers, Portable Tex
 
 ### Task 4: Project data, screenshots and seed script
 
-> **Gate:** Prerequisites 1–4 done (`PUBLIC_SANITY_PROJECT_ID` real, `SANITY_API_TOKEN` set, Upwork screenshots in `tmp/screenshots/`).
+> **Gate:** Prerequisites 1–2 done (`PUBLIC_SANITY_PROJECT_ID` real, `SANITY_API_TOKEN` set). The four Upwork screenshots are **optional for now** (decision 2026-09-06): projects without a screenshot are skipped by the seed and appear once the PNGs are dropped into `tmp/screenshots/` and the seed is re-run — it patches by slug.
 
 **Files:**
 - Create: `data/projects.json`, `scripts/capture-screenshots.mjs`, `scripts/seed-projects.mjs`
@@ -1472,7 +1472,7 @@ await browser.close();
 Run: `node scripts/capture-screenshots.mjs && ls tmp/screenshots/`
 Expected: 8 files — `armony.png enlace.png stephania-lopez.png serendipia.png hablo-portugues.png affine.png siamo.png overnatic.png`. Open two of them and confirm they show the actual site, not a cookie banner or an error page. If a site shows a cookie banner, add a `page.click()` for its accept button inside the try block for that slug.
 
-Confirm the four manual files are present: `ls tmp/screenshots/{klicana,miami-trading-lab,avgust,zohara}.png`.
+The four Upwork files (`klicana.png`, `miami-trading-lab.png`, `avgust.png`, `zohara.png`) are added by Jose whenever available; their absence is expected today and produces explicit `skip` lines in the next step.
 
 - [ ] **Step 5: Write `scripts/seed-projects.mjs`**
 
@@ -1544,9 +1544,9 @@ console.log(`${published}/${projects.length} projects published`);
 - [ ] **Step 6: Run the seed and verify in the Studio**
 
 Run: `node --env-file=.env scripts/seed-projects.mjs`
-Expected: `12/12 projects published` (or fewer with explicit `skip` lines naming which screenshot is missing).
+Expected: `N/12 projects published` where N equals the number of PNGs in `tmp/screenshots/` (8 today), with one explicit `skip` line per missing screenshot.
 
-Then in `../studio-personal-site` run `npm run dev`, open http://localhost:3333, log in, open **Projects**: 12 documents in manual order, each with a screenshot and a language tab bar on Summary. Open Armony: the Case study field shows three paragraphs under EN and empty ES/PT tabs.
+Then in `../studio-personal-site` run `npm run dev`, open http://localhost:3333, log in, open **Projects**: one document per seeded project (8 today), in manual order, each with a screenshot and a language tab bar on Summary. Open Armony: the Case study field shows three paragraphs under EN and empty ES/PT tabs.
 
 - [ ] **Step 7: Commit**
 
@@ -1815,22 +1815,24 @@ const { project } = Astro.props;
 
 `src/pages/es/work/[slug].astro` and `src/pages/pt/work/[slug].astro`: identical with `getProjectBySlug('es', slug)` / `getProjectBySlug('pt', slug)`, `locale="es"` / `locale="pt"`, and `../../../` import paths.
 
-- [ ] **Step 9: Build and assert**
+- [ ] **Step 9: Build and assert** (expectations derive from which screenshots exist, so the same check holds with 8 projects today and 12 later)
 
 ```bash
 npm run build && node -e "
 const fs=require('fs');
+const all=JSON.parse(fs.readFileSync('data/projects.json','utf8'));
+const seeded=all.filter(p=>fs.existsSync('tmp/screenshots/'+p.slug+'.png'));
+const withCase=seeded.filter(p=>p.caseStudy).map(p=>p.slug);
 const idx=fs.readFileSync('dist/work/index.html','utf8');
-const cards=(idx.match(/data-kind=/g)||[]).length; if(cards!==12){console.error('expected 12 cards, got',cards);process.exit(1)}
-if(!/Temporarily offline/.test(idx)){console.error('Zohara parked label missing');process.exit(1)}
-if(/href=\"https:\/\/zohara/.test(idx)){console.error('Zohara must not link out');process.exit(1)}
-for(const p of ['dist/work/armony/index.html','dist/es/work/armony/index.html','dist/pt/work/avgust/index.html','dist/work/enlace/index.html','dist/work/klicana/index.html']){ if(!fs.existsSync(p)){console.error('missing',p);process.exit(1)} }
-if(fs.existsSync('dist/work/siamo/index.html')){console.error('siamo must not have a case page');process.exit(1)}
+const cards=(idx.match(/data-kind=/g)||[]).length; if(cards!==seeded.length){console.error('expected',seeded.length,'cards, got',cards);process.exit(1)}
+if(seeded.some(p=>p.slug==='zohara')){ if(!/Temporarily offline/.test(idx)){console.error('Zohara parked label missing');process.exit(1)} if(/href=\"https:\/\/zohara/.test(idx)){console.error('Zohara must not link out');process.exit(1)} }
+for(const sl of withCase){ for(const l of ['','es/','pt/']){ const p='dist/'+l+'work/'+sl+'/index.html'; if(!fs.existsSync(p)){console.error('missing',p);process.exit(1)} } }
+for(const p of seeded.filter(p=>!p.caseStudy)){ if(fs.existsSync('dist/work/'+p.slug+'/index.html')){console.error(p.slug,'must not have a case page');process.exit(1)} }
 const es=fs.readFileSync('dist/es/work/index.html','utf8'); if(!es.includes('Ver sitio')){console.error('ES copy missing');process.exit(1)}
-console.log('work OK')"
+console.log('work OK —',seeded.length,'projects,',withCase.length,'case pages')"
 ```
 
-Expected: `work OK`
+Expected: `work OK — 8 projects, 2 case pages` today (`12 … 4` once the Upwork screenshots are seeded).
 
 - [ ] **Step 10: Commit**
 
@@ -1939,16 +1941,18 @@ import HomeView from '../views/HomeView.astro';
 ```bash
 npm run build && node -e "
 const fs=require('fs');
+const all=JSON.parse(fs.readFileSync('data/projects.json','utf8'));
+const want=Math.min(4, all.filter(p=>p.featured&&fs.existsSync('tmp/screenshots/'+p.slug+'.png')).length);
 for(const [f,h1] of [['dist/index.html','I build the site that replaces your WordPress.'],['dist/es/index.html','Construyo el sitio que reemplaza tu WordPress.'],['dist/pt/index.html','Eu construo o site que substitui o seu WordPress.']]){
   const s=fs.readFileSync(f,'utf8');
   if(!s.includes(h1)){console.error(f,'h1 missing');process.exit(1)}
-  const n=(s.match(/data-kind=/g)||[]).length; if(n!==4){console.error(f,'expected 4 featured, got',n);process.exit(1)}
+  const n=(s.match(/data-kind=/g)||[]).length; if(n!==want){console.error(f,'expected',want,'featured, got',n);process.exit(1)}
   if(!s.includes('\"@type\":\"Person\"')){console.error(f,'Person JSON-LD missing');process.exit(1)}
 }
-console.log('home OK')"
+console.log('home OK —',want,'featured')"
 ```
 
-Expected: `home OK`
+Expected: `home OK — 2 featured` today (`4` once Avgust and Klicana are seeded).
 
 - [ ] **Step 4: Commit**
 
@@ -2482,7 +2486,7 @@ git push
 
 ## Acceptance checklist (from the spec §9)
 
-- [ ] 12 projects published with screenshots; 4 case-study pages; Zohara without a link — Task 5 assertion.
+- [ ] Every project with a screenshot is published (8 today, 12 once the Upwork PNGs are seeded); case-study pages for those with an English case study; Zohara without a link — Task 5 assertion.
 - [ ] A post published in the Studio appears after rebuild without touching code — Task 8 Step 6 + Task 10 Step 4.
 - [ ] Home, work, services, about, blog in EN and ES; PT fixed pages — Tasks 5–8 build all three locales.
 - [ ] Contact form delivers email and fires `contact_submit` — Task 9 Step 8 (manual send) + GA4 DebugView.
