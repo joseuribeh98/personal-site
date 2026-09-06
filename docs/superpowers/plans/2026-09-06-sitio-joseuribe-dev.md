@@ -2489,7 +2489,11 @@ Document in `README.md` under **Despliegue**, replacing the "Pendiente" sentence
    - Trigger on: Create, Update, Delete
    - Filter: `_type in ["project", "post"]`
    - HTTP method: POST
-3. Publish any document in `/admin` and confirm a new deployment appears in Vercel within a minute.
+3. Publish any document in the Studio and confirm a new deployment appears in Vercel within a minute.
+
+### Avisos de build conocidos
+
+`npm run build` imprime dos avisos sobre prioridad de rutas (`/es` vs `/es/`, `/pt` vs `/pt/`). Son un caso límite benigno de Astro con `i18n.fallback` + `prefixDefaultLocale: false` en la ruta raíz: la página real gana sobre el fallback y la salida es correcta. No configurar `prerenderConflictBehavior: 'ignore'` — silenciaría colisiones reales.
 ```
 
 - [ ] **Step 5: Final smoke on production**
