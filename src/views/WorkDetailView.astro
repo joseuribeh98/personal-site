@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import { t, localizePath, type Locale } from '../i18n/ui';
+import type { Project } from '../lib/content';
+import { urlFor } from '../lib/sanity';
+import { renderPortableText } from '../lib/portable-text';
+import { creativeWorkJsonLd } from '../lib/seo';
+interface Props { locale: Locale; project: Project }
+const { locale, project: p } = Astro.props;
+const tr = t(locale);
+const html = await renderPortableText(p.caseStudy ?? [], { imageUrl: (b) => urlFor(b as any).width(1400).url() });
+const hero = urlFor(p.screenshot).width(1600).url();
+const summary = p.summary;
+const live = p.status === 'live' && p.url;
+---
+<Base {locale} title={`${p.title} — Jose Uribe`} description={summary} ogImage={urlFor(p.screenshot).width(1200).height(630).fit('crop').url()} jsonLd={creativeWorkJsonLd(p, locale)}>
+  <article class="wrap py-16 md:py-24">
+    <a href={localizePath('/work', locale)} class="text-sm text-ink-mut hover:text-ink">← {tr('work.back')}</a>
+    <h1 class="mt-6 max-w-3xl text-display-lg">{p.title}</h1>
+    <p class="mt-4 max-w-2xl text-xl text-ink-mut">{summary}</p>
+    <dl class="mt-8 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-4 text-sm md:grid-cols-4">
+      {p.client && <div><dt class="eyebrow">{tr('work.client')}</dt><dd class="mt-1">{p.client}</dd></div>}
+      {p.role && <div><dt class="eyebrow">{tr('work.role')}</dt><dd class="mt-1">{p.role}</dd></div>}
+      {p.year && <div><dt class="eyebrow">{tr('work.year')}</dt><dd class="mt-1">{p.year}</dd></div>}
+      {p.stack && p.stack.length > 0 && <div class="col-span-2 md:col-span-1"><dt class="eyebrow">{tr('work.stack')}</dt><dd class="mt-1">{p.stack.join(' · ')}</dd></div>}
+    </dl>
+    <img src={hero} width="1600" alt={`Screenshot of ${p.title}`} loading="eager" decoding="async" class="mt-12 w-full rounded-xl border border-line" />
+    <div class="prose-site mt-12" set:html={html} />
+    {live && <p class="mt-10"><a href={p.url!} target="_blank" rel="noopener" class="btn-primary" data-outbound={p.slug}>{tr('work.viewSite')} ↗</a></p>}
+  </article>
+</Base>
