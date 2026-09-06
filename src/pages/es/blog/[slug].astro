@@ -1,0 +1,10 @@
+---
+import BlogPostView from '../../../views/BlogPostView.astro';
+import { getPosts } from '../../../lib/sanity';
+export async function getStaticPaths() {
+  const posts = await getPosts('es');
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+const { post } = Astro.props;
+---
+<BlogPostView locale="es" {post} />
