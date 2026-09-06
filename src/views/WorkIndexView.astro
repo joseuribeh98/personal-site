@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import { t, type Locale } from '../i18n/ui';
+import { getProjects, getCaseStudySlugs } from '../lib/sanity';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+const [projects, caseSlugs] = await Promise.all([getProjects(locale), getCaseStudySlugs()]);
+---
+<Base {locale} title={`${tr('work.title')} — Jose Uribe`} description={tr('work.lead')}>
+  <section class="wrap py-16 md:py-24">
+    <SectionHeading as="h1" title={tr('work.title')} lead={tr('work.lead')} />
+    <div class="mt-12">
+      <ProjectGrid {projects} {locale} filter caseSlugs={caseSlugs} />
+    </div>
+  </section>
+</Base>

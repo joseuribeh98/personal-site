@@ -1,0 +1,30 @@
+---
+import { t, type Locale } from '../i18n/ui';
+import type { Project } from '../lib/content';
+import ProjectCard from './ProjectCard.astro';
+interface Props { projects: Project[]; locale: Locale; filter?: boolean; caseSlugs?: string[] }
+const { projects, locale, filter = false, caseSlugs = [] } = Astro.props;
+const tr = t(locale);
+const filters = [['all', tr('work.filterAll')], ['app', tr('work.filterApp')], ['site', tr('work.filterSite')], ['wordpress', tr('work.filterWp')]] as const;
+---
+{filter && (
+  <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label={tr('work.filterLabel')} data-filters>
+    {filters.map(([k, label], i) => (
+      <button type="button" data-filter={k} aria-pressed={i === 0 ? 'true' : 'false'} class="btn-ghost py-2! text-sm aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-paper">{label}</button>
+    ))}
+  </div>
+)}
+<div class="grid gap-10 md:grid-cols-2" data-grid>
+  {projects.map((p, i) => <ProjectCard project={p} {locale} eager={i < 2} hasCase={caseSlugs.includes(p.slug)} />)}
+</div>
+<script>
+    const root = document.querySelector('[data-filters]');
+    const cards = [...document.querySelectorAll<HTMLElement>('[data-grid] [data-kind]')];
+    root?.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-filter]');
+      if (!btn) return;
+      const k = btn.dataset.filter;
+      root.querySelectorAll('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      cards.forEach((c) => { c.hidden = k !== 'all' && c.dataset.kind !== k; });
+    });
+</script>

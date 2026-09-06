@@ -1,0 +1,246 @@
+[
+  {
+    "slug": "armony",
+    "title": "Armony — Plan contracting wizard",
+    "kind": "app",
+    "client": "Funeraria Armony · Ecuador",
+    "role": "Full Stack Developer",
+    "year": 2026,
+    "stack": ["Next.js", "TypeScript", "Supabase", "Tailwind CSS", "Server Actions"],
+    "url": "https://planes.armony.com.ec/",
+    "status": "live",
+    "featured": true,
+    "order": 1,
+    "summary": {
+      "en": "A multi-step wizard for buying funeral service plans online, modeled after flight-booking flows: clear progress, plan selection, and a payment summary at checkout. Next.js Server Actions with Supabase as the backend.",
+      "es": "Un wizard de varios pasos para contratar planes exequiales en línea, inspirado en los flujos de reserva de vuelos: progreso claro, selección de plan y resumen de pago al final. Next.js Server Actions con Supabase como backend.",
+      "pt": "Um wizard em várias etapas para contratar planos funerários online, inspirado nos fluxos de reserva de voos: progresso claro, seleção de plano e resumo de pagamento no final. Next.js Server Actions com Supabase como backend."
+    },
+    "caseStudy": {
+      "en": [
+        "Armony sells funeral service plans in Ecuador. Their sales happened by phone and in person, and every plan had variables — coverage, number of beneficiaries, payment schedule — that made a simple form useless. They needed something closer to booking a flight than to filling a contact form.",
+        "I designed the purchase as a multi-step wizard: pick a plan, add beneficiaries, choose how to pay, review a summary, pay. Each step validates on the server with Next.js Server Actions so the client never holds pricing logic. Supabase stores drafts, so a customer can leave and come back without losing progress.",
+        "The result is a checkout that a first-time visitor completes without talking to a salesperson, and that the company's team can follow from the same database. It is approaching production launch."
+      ]
+    }
+  },
+  {
+    "slug": "avgust",
+    "title": "Avgust — Carbon footprint calculator with PDF certificate",
+    "kind": "app",
+    "client": "Avgust · sustainability consultancy",
+    "role": "Full Stack Developer",
+    "year": 2023,
+    "stack": ["Vue.js", "Vuetify", "Tailwind CSS", "Client-side PDF"],
+    "url": null,
+    "status": "offline",
+    "featured": true,
+    "order": 2,
+    "summary": {
+      "en": "A calculator that lets visitors measure their CO₂ emissions and download a certificate with the result as a PDF, generated in the browser. The company uses it as a lead magnet and as the entry point to its sustainability services.",
+      "es": "Una calculadora que permite a los visitantes medir sus emisiones de CO₂ y descargar un certificado con el resultado en PDF, generado en el navegador. La empresa la usa como imán de leads y puerta de entrada a sus servicios de sostenibilidad.",
+      "pt": "Uma calculadora que permite aos visitantes medir suas emissões de CO₂ e baixar um certificado com o resultado em PDF, gerado no navegador. A empresa a usa como isca de leads e porta de entrada para seus serviços de sustentabilidade."
+    },
+    "caseStudy": {
+      "en": [
+        "Avgust advises companies on sustainability. Their problem was the top of the funnel: people were curious about their footprint but had no reason to leave their contact details.",
+        "The calculator gives each visitor a concrete number plus guidance on how to reduce it, and then offers a downloadable certificate. The PDF is generated entirely client-side — no server, no queue, instant. Built with Vue.js and Vuetify, styled with Tailwind CSS.",
+        "A result someone can share is a result someone will share. The tool became the company's main lead source and the natural first step into a paid engagement."
+      ]
+    }
+  },
+  {
+    "slug": "klicana",
+    "title": "Klicana — Affiliate marketing platform",
+    "kind": "app",
+    "client": "Klicana",
+    "role": "Full Stack Developer",
+    "year": 2023,
+    "stack": ["Next.js 13", "React", "WordPress REST API", "JWT", "WooCommerce"],
+    "url": null,
+    "status": "offline",
+    "featured": true,
+    "order": 3,
+    "summary": {
+      "en": "An affiliate marketing platform in the vein of ClickBank and Hotmart: a Next.js app running on top of an existing WordPress install. Custom REST endpoints feed the app and JWT issued by WordPress keeps a single user base for both halves. Shipped to a closed beta.",
+      "es": "Una plataforma de marketing de afiliados al estilo de ClickBank y Hotmart: una app en Next.js corriendo sobre un WordPress existente. Endpoints REST a medida alimentan la app y JWT emitido por WordPress mantiene una sola base de usuarios. Lanzada en beta cerrada.",
+      "pt": "Uma plataforma de marketing de afiliados no estilo ClickBank e Hotmart: um app em Next.js rodando sobre um WordPress existente. Endpoints REST sob medida alimentam o app e JWT emitido pelo WordPress mantém uma única base de usuários. Lançada em beta fechado."
+    },
+    "caseStudy": {
+      "en": [
+        "Klicana wanted a marketplace where sellers list digital products and affiliates promote them for a commission — the ClickBank model — but they already had a WordPress site with users, products and WooCommerce orders they could not throw away.",
+        "Instead of rebuilding everything, I built the platform as a Next.js 13 app on top of WordPress. I extended the WordPress REST API with custom endpoints for products, affiliate links and commissions, and wired authentication through JWT issued by WordPress so a seller logs in once and exists in both systems.",
+        "The platform shipped to a closed beta with a controlled group of sellers. It is also the clearest example of why I don't treat WordPress as the enemy: sometimes the right move is to keep it as the backend and build the experience on top."
+      ]
+    }
+  },
+  {
+    "slug": "enlace",
+    "title": "Enlace — Research NGO institutional site",
+    "kind": "site",
+    "client": "Enlace · Rio de Janeiro",
+    "role": "Full Stack Developer",
+    "year": 2026,
+    "stack": ["Astro", "Tailwind CSS", "TypeScript"],
+    "url": "https://www.enlacepesquisa.org/",
+    "status": "live",
+    "featured": true,
+    "order": 4,
+    "summary": {
+      "en": "The institutional site for a Rio de Janeiro civil society organization working in research, training and advocacy. Eight sections in Brazilian Portuguese, an abstract network illustration instead of stock photography, fully static and tuned for Core Web Vitals.",
+      "es": "El sitio institucional de una organización de la sociedad civil de Río de Janeiro dedicada a investigación, formación e incidencia. Ocho secciones en portugués de Brasil, una ilustración abstracta de red en lugar de fotos de stock, totalmente estático y afinado para Core Web Vitals.",
+      "pt": "O site institucional de uma organização da sociedade civil do Rio de Janeiro que atua em pesquisa, formação e advocacy. Oito seções em português do Brasil, uma ilustração abstrata de rede no lugar de fotos de banco, totalmente estático e ajustado para Core Web Vitals."
+    },
+    "caseStudy": {
+      "en": [
+        "Enlace does research, training and social advocacy in Rio de Janeiro. They needed a site that looked serious to funders and institutions, loaded fast on the phones their audience actually uses, and could be handed to a small team without a maintenance contract.",
+        "I built it in Astro with Tailwind CSS: eight sections covering the three programme areas, projects, events, publications, transparency and contact. Instead of stock photography I used an abstract network illustration with restrained motion — it reads as institutional without looking like every other NGO site.",
+        "Fully static, no plugins, nothing to update. It is live at enlacepesquisa.org and it is the clearest before-and-after I can show for what 'leaving WordPress' means in practice."
+      ]
+    }
+  },
+  {
+    "slug": "miami-trading-lab",
+    "title": "Miami Trading Lab — Trading e-learning platform",
+    "kind": "app",
+    "client": "Miami Trading Lab · United States",
+    "role": "Full Stack Developer",
+    "year": 2023,
+    "stack": ["WordPress", "Elementor", "Thinkific", "Financial Modeling Prep API", "Payment gateways"],
+    "url": null,
+    "status": "offline",
+    "featured": false,
+    "order": 5,
+    "summary": {
+      "en": "An e-learning platform for Spanish-speaking students in the US learning to trade. WordPress and Elementor for the content, Thinkific as the LMS, payment gateways connected end to end, and an automated financial news section fed by the Financial Modeling Prep API.",
+      "es": "Una plataforma de e-learning para estudiantes hispanohablantes en EE.UU. que aprenden a operar en bolsa. WordPress y Elementor para el contenido, Thinkific como LMS, pasarelas de pago conectadas de punta a punta y una sección de noticias financieras automatizada con la API de Financial Modeling Prep.",
+      "pt": "Uma plataforma de e-learning para estudantes hispanofalantes nos EUA que aprendem a operar na bolsa. WordPress e Elementor para o conteúdo, Thinkific como LMS, gateways de pagamento conectados de ponta a ponta e uma seção de notícias financeiras automatizada com a API do Financial Modeling Prep."
+    }
+  },
+  {
+    "slug": "stephania-lopez",
+    "title": "Stephania López — Branding designer portfolio",
+    "kind": "site",
+    "client": "Stephania López · Medellín",
+    "role": "Developer",
+    "year": 2025,
+    "stack": ["Astro", "Tailwind CSS", "TypeScript"],
+    "url": "https://stephanialopez.co",
+    "status": "live",
+    "featured": false,
+    "order": 6,
+    "summary": {
+      "en": "A portfolio for a branding and packaging designer with nine years in hospitality and lifestyle brands. Visual-first layout, static, fast, and built to her aesthetic — no templates.",
+      "es": "Un portafolio para una diseñadora de marca y empaque con nueve años en marcas de hospitalidad y estilo de vida. Diseño visual primero, estático, rápido y hecho a su estética — sin plantillas.",
+      "pt": "Um portfólio para uma designer de marca e embalagem com nove anos em marcas de hospitalidade e lifestyle. Layout visual em primeiro lugar, estático, rápido e feito para a estética dela — sem templates."
+    }
+  },
+  {
+    "slug": "serendipia",
+    "title": "Serendipia — Corporate wellness brand site",
+    "kind": "site",
+    "client": "Serendipia",
+    "role": "Developer",
+    "year": 2025,
+    "stack": ["Astro", "Tailwind CSS", "TypeScript"],
+    "url": "https://serendipialight.com",
+    "status": "live",
+    "featured": false,
+    "order": 7,
+    "summary": {
+      "en": "A site for a yoga instructor and corporate wellness provider selling emotional well-being programs to organizations. Calm and professional, aimed at HR and leadership, with a content-first structure.",
+      "es": "Un sitio para una instructora de yoga y proveedora de bienestar corporativo que vende programas de bienestar emocional a organizaciones. Calmado y profesional, dirigido a RR.HH. y liderazgo, con una estructura que prioriza el contenido.",
+      "pt": "Um site para uma instrutora de yoga e provedora de bem-estar corporativo que vende programas de bem-estar emocional para organizações. Calmo e profissional, voltado a RH e liderança, com estrutura que prioriza o conteúdo."
+    }
+  },
+  {
+    "slug": "hablo-portugues",
+    "title": "Hablo Portugués — Language learning site",
+    "kind": "wordpress",
+    "client": "Hablo Portugués",
+    "role": "Full Stack Developer",
+    "year": 2025,
+    "stack": ["WordPress", "Elementor"],
+    "url": "https://habloportugues.com/",
+    "status": "live",
+    "featured": false,
+    "order": 8,
+    "summary": {
+      "en": "A WordPress site for a Portuguese language educator targeting Spanish speakers, positioned around cultural immersion rather than grammar drills. Clean, content-driven, optimized for readability and lead capture.",
+      "es": "Un sitio en WordPress para una educadora de portugués dirigida a hispanohablantes, posicionado en la inmersión cultural más que en la gramática. Limpio, centrado en el contenido, optimizado para lectura y captura de leads.",
+      "pt": "Um site em WordPress para uma educadora de português voltada a hispanofalantes, posicionado na imersão cultural em vez da gramática. Limpo, centrado no conteúdo, otimizado para leitura e captação de leads."
+    }
+  },
+  {
+    "slug": "affine",
+    "title": "Affine — Corporate site",
+    "kind": "wordpress",
+    "client": "Affine · Colombia",
+    "role": "Developer",
+    "year": 2025,
+    "stack": ["WordPress", "Elementor", "Performance optimization"],
+    "url": "https://affine.com.co",
+    "status": "live",
+    "featured": false,
+    "order": 9,
+    "summary": {
+      "en": "A corporate WordPress site for a Colombian company: custom layout focused on brand presentation and lead generation, optimized for mobile and page speed.",
+      "es": "Un sitio corporativo en WordPress para una empresa colombiana: diseño a medida centrado en presentación de marca y generación de leads, optimizado para móvil y velocidad.",
+      "pt": "Um site corporativo em WordPress para uma empresa colombiana: layout sob medida focado em apresentação de marca e geração de leads, otimizado para celular e velocidade."
+    }
+  },
+  {
+    "slug": "siamo",
+    "title": "SIAMO — Corporate services site",
+    "kind": "wordpress",
+    "client": "SIAMO · Colombia",
+    "role": "Developer",
+    "year": 2025,
+    "stack": ["WordPress", "Elementor", "Custom theme"],
+    "url": "https://siamoservicios.com",
+    "status": "live",
+    "featured": false,
+    "order": 10,
+    "summary": {
+      "en": "A WordPress site for a Colombian outsourced business services company. Clean, professional layout that communicates the value proposition to mid-size clients; custom theme with performance and mobile optimization.",
+      "es": "Un sitio en WordPress para una empresa colombiana de servicios empresariales tercerizados. Diseño limpio y profesional que comunica la propuesta de valor a clientes medianos; tema a medida con optimización de rendimiento y móvil.",
+      "pt": "Um site em WordPress para uma empresa colombiana de serviços empresariais terceirizados. Layout limpo e profissional que comunica a proposta de valor a clientes de médio porte; tema sob medida com otimização de desempenho e celular."
+    }
+  },
+  {
+    "slug": "zohara",
+    "title": "Zohara — Villa rental catalog with WhatsApp pre-booking",
+    "kind": "wordpress",
+    "client": "Zohara · Colombia",
+    "role": "Full Stack Developer",
+    "year": 2023,
+    "stack": ["WordPress", "Crocoblock", "JetEngine", "JetBooking"],
+    "url": null,
+    "status": "parked",
+    "featured": false,
+    "order": 11,
+    "summary": {
+      "en": "A villa rental catalog with a pre-booking flow that routes each enquiry into WhatsApp already carrying the quote for the selected villa. WordPress with Crocoblock, JetEngine and JetBooking, mobile-first because most traffic arrives from social media.",
+      "es": "Un catálogo de alquiler de villas con un flujo de pre-reserva que lleva cada consulta a WhatsApp con la cotización de la villa elegida ya incluida. WordPress con Crocoblock, JetEngine y JetBooking, mobile-first porque casi todo el tráfico llega desde redes sociales.",
+      "pt": "Um catálogo de aluguel de vilas com um fluxo de pré-reserva que leva cada consulta ao WhatsApp já com o orçamento da vila escolhida. WordPress com Crocoblock, JetEngine e JetBooking, mobile-first porque quase todo o tráfego chega das redes sociais."
+    }
+  },
+  {
+    "slug": "overnatic",
+    "title": "Overnatic — Web development agency site",
+    "kind": "site",
+    "client": "Overnatic (own brand, 2026)",
+    "role": "Founder & Developer",
+    "year": 2026,
+    "stack": ["Astro", "TypeScript", "GSAP", "Vercel"],
+    "url": "https://overnatic.us",
+    "status": "live",
+    "featured": false,
+    "order": 12,
+    "summary": {
+      "en": "The site for a web development brand I ran in 2026: fully static Astro, multilingual (ES/EN/PT), custom OG images, and a WhatsApp-first contact flow. Retired in favor of this site — the lessons from it are on the blog.",
+      "es": "El sitio de una marca de desarrollo web que operé en 2026: Astro totalmente estático, multilingüe (ES/EN/PT), imágenes OG a medida y contacto por WhatsApp. Retirado a favor de este sitio — las lecciones están en el blog.",
+      "pt": "O site de uma marca de desenvolvimento web que operei em 2026: Astro totalmente estático, multilíngue (ES/EN/PT), imagens OG sob medida e contato via WhatsApp. Aposentado em favor deste site — as lições estão no blog."
+    }
+  }
+]

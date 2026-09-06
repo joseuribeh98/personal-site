@@ -21,7 +21,7 @@ El sitio personal de Jose Uribe: portafolio de 12 proyectos, blog autogestionabl
 |---|---|---|
 | Framework | **Astro 7** (7.3.1 al 2026-09-06), `output: 'static'` | Lo que vende. Instalado con `npm create astro@latest --template minimal` |
 | Estilos | **Tailwind CSS v4** (`npx astro add tailwind`) | Lo que usa en proyectos de clientes; velocidad de iteración |
-| CMS | **Sanity** (`@sanity/astro` + `@astrojs/react`) | Comparativa del 2026-09-06 — ver spec de marca §2. Studio embebido en `/admin` con hash-router para mantener el sitio estático |
+| CMS | **Sanity**, Studio **standalone** en el repo hermano `../studio-personal-site` (hospedado en `joseuribe.sanity.studio`) | Comparativa del 2026-09-06 — ver spec de marca §2. Decisión del 2026-09-06 (Jose + skill `sanity-best-practices`): el Studio no se embebe; la app usa `@sanity/astro` solo por `sanity:client` |
 | i18n | **Astro i18n nativo**: `defaultLocale: 'en'`, `locales: ['en','es','pt']`, `prefixDefaultLocale: false` | EN sin prefijo en raíz; `/es/…` y `/pt/…` |
 | Imágenes | `astro:assets` para lo estático; **Sanity assets** (CDN, hotspot/crop) para capturas de proyectos y portadas de posts | El editor puede cambiarlas sin tocar código |
 | Sitemap | `@astrojs/sitemap` con i18n | hreflang correcto |
@@ -45,13 +45,12 @@ El sitio personal de Jose Uribe: portafolio de 12 proyectos, blog autogestionabl
 /blog                Life after WordPress
 /blog/[slug]         Post
 /es/…  /pt/…         Espejo de todo lo anterior
-/admin               Sanity Studio (estático, hash-router, noindex)
 /404
 ```
 
 Los proyectos **sin** `caseStudy` no tienen página propia: su tarjeta enlaza al sitio vivo (o a nada, si `status != live`).
 
-**Orden de idiomas:** EN es el original y se escribe primero. ES completo al lanzar. PT puede lanzarse con las páginas fijas traducidas y el blog parcial — Astro i18n con `fallbackType: 'redirect'` cubre lo que falte sin romper.
+**Orden de idiomas:** EN es el original y se escribe primero. ES completo al lanzar. PT puede lanzarse con las páginas fijas traducidas y el blog parcial. Nota (revisión final 2026-09-06): el `fallback` de Astro i18n es por ruta, no por path — no cubre un post que existe en EN pero no en PT. Para esos casos el selector de idioma enlaza al índice del blog del idioma destino (`fallbackPath`), y `hreflang` solo lista las versiones publicadas.
 
 ---
 
@@ -75,8 +74,8 @@ Dos tipos. Nada más hasta que haga falta.
 | `screenshot` | image (hotspot) | Obligatoria — regla: no se publica sin captura |
 | `featured` | boolean | Los 4 de la home |
 | `order` | number | Orden manual |
-| `summary` | object `{en, es, pt}` de text | Localización a nivel de campo: el proyecto es uno, el texto cambia |
-| `caseStudy` | object `{en, es, pt}` de portable text, opcional | Solo los 4 con ficha |
+| `summary` | `internationalizedArrayText` (plugin `sanity-plugin-internationalized-array`) | Localización a nivel de campo: el proyecto es uno, el texto cambia. Se lee con `coalesce(summary[_key == $locale][0].value, summary[_key == "en"][0].value)` |
+| `caseStudy` | `internationalizedArrayRichText`, opcional | Solo los 4 con ficha |
 
 ### `post`
 
@@ -84,14 +83,14 @@ Dos tipos. Nada más hasta que haga falta.
 |---|---|---|
 | `title` | string | |
 | `slug` | slug | |
-| `language` | `en` \| `es` \| `pt` | **Localización a nivel de documento**: un post puede existir en un idioma y no en otro |
+| `language` | `en` \| `es` \| `pt` (readOnly, lo gestiona el plugin `@sanity/document-internationalization`) | **Localización a nivel de documento**: un post puede existir en un idioma y no en otro |
 | `excerpt` | text | |
 | `body` | portable text | Con bloques de código e imágenes |
 | `cover` | image, opcional | |
 | `publishedAt` | datetime | |
-| `translationOf` | reference → post, opcional | Para enlazar versiones y emitir hreflang |
+| *(traducciones)* | documentos `translation.metadata` del plugin | Enlazan las versiones; el frontend las lee con `*[_type == "translation.metadata" && references(^._id)]`. Nunca se enlazan a mano |
 
-**Por qué dos estrategias de i18n distintas:** los proyectos son la misma entidad en tres idiomas (campo localizado). Los posts pueden no traducirse todos (documento por idioma). Mezclarlas es deliberado.
+**Por qué dos estrategias de i18n distintas:** los proyectos son la misma entidad en tres idiomas (campo localizado). Los posts pueden no traducirse todos (documento por idioma). Mezclarlas es deliberado y coincide con la guía de Sanity (`localization.md`: *things* → field-level, *presentation* → document-level). **No se usan objetos `{en, es, pt}`:** Sanity los desaconseja por límites de atributos; se usan los dos plugins oficiales.
 
 **Textos de interfaz** (menú, botones, títulos de sección, copy de home/servicios/about): **en código**, en `src/i18n/ui.ts`. No van al CMS — cambian con el diseño, no con el contenido.
 
@@ -102,11 +101,6 @@ Dos tipos. Nada más hasta que haga falta.
 ```
 joseuribe-dev/
 ├── astro.config.mjs
-├── sanity.config.ts            # Studio: schema + plugins
-├── sanity/
-│   └── schema/
-│       ├── project.ts
-│       └── post.ts
 ├── src/
 │   ├── pages/
 │   │   ├── index.astro
@@ -115,7 +109,6 @@ joseuribe-dev/
 │   │   ├── about.astro
 │   │   ├── blog/{index,[slug]}.astro
 │   │   ├── es/…  pt/…          # espejos que reutilizan los mismos componentes
-│   │   ├── admin/[...].astro   # Studio embebido
 │   │   └── 404.astro
 │   ├── components/
 │   ├── layouts/Base.astro
@@ -124,6 +117,13 @@ joseuribe-dev/
 │   └── styles/global.css       # tokens de diseño + Tailwind
 ├── public/
 └── docs/superpowers/specs/     # copia de los dos specs
+
+../studio-personal-site/        # Studio standalone, repo propio (proyecto rkr2s9sc)
+├── sanity.config.ts            # plugins: structure, vision, code-input, document-internationalization, internationalized-array
+├── sanity.cli.ts               # projectId/dataset, studioHost, typegen hacia ../joseuribe-dev
+├── structure.ts
+├── languages.ts
+└── schemaTypes/{documents/project.ts, documents/post.ts, objects/richText.ts, index.ts}
 ```
 
 ---
@@ -144,8 +144,7 @@ Se ejecuta en implementación con la skill `frontend-design`. Lo que este spec f
 - `<title>`/`description` por página e idioma; `hreflang` por `@astrojs/sitemap` + `<link rel="alternate">`.
 - Open Graph con imagen por página (la captura del proyecto en `/work/[slug]`, la portada en posts).
 - JSON-LD: `Person` (Jose) en home/about, `Article` en posts, `CreativeWork` en fichas.
-- `robots.txt` con `/admin` excluido. `noindex` en `/admin`.
-- **Eventos GA4 mínimos:** `contact_submit`, `cta_click` (con `location`), `project_outbound` (clic a sitio de cliente), `book_call`.
+- **Eventos GA4 mínimos:** `contact_submit`, `cta_click` (con `location`), `project_outbound` (clic a sitio de cliente — solo eso), `social_click` (con `network`: upwork/github/linkedin), `book_call`.
 
 ---
 
@@ -156,19 +155,19 @@ Se ejecuta en implementación con la skill `frontend-design`. Lo que este spec f
 3. Webhook en Sanity (on publish) → Deploy Hook de Vercel.
 4. Dominio `joseuribe.dev` → Vercel (**ya hecho**). `overnatic.us` se apaga cuando esto esté vivo.
 
-**Requiere acción de Jose (no automatizable):** crear el proyecto en Sanity (`npx sanity@latest init` exige login en navegador) y pegar el `projectId`; crear cuenta en Web3Forms; crear propiedad GA4. ~~Comprar el dominio~~ hecho.
+**Requiere acción de Jose (no automatizable):** ~~crear el proyecto en Sanity~~ hecho (`rkr2s9sc`); `npx sanity login` y luego, en `../studio-personal-site`, `npm run deploy-schema` y `npm run deploy`; token de escritura para el seed; crear cuenta en Web3Forms; crear propiedad GA4. ~~Comprar el dominio~~ hecho.
 
 ---
 
 ## 9. Criterios de aceptación
 
 - [ ] Los 12 proyectos publicados con captura; los 4 con ficha completa; Zohara sin enlace.
-- [ ] Blog operativo desde `/admin`: Jose publica un post en EN y aparece en el sitio tras el rebuild sin tocar código.
+- [ ] Blog operativo desde el Studio standalone: Jose publica un post en EN y aparece en el sitio tras el rebuild sin tocar código.
 - [ ] Home, work, services, about y blog en EN y ES. PT con páginas fijas al menos.
 - [ ] Formulario de contacto entrega al correo y dispara `contact_submit` en GA4.
 - [ ] Lighthouse móvil ≥ 95 en home y en una ficha de proyecto.
 - [ ] `hreflang` válido en las tres versiones.
-- [ ] `/admin` funciona en producción con login de Sanity.
+- [ ] El Studio standalone está desplegado en `joseuribe.sanity.studio` y permite iniciar sesión.
 
 ---
 
@@ -176,6 +175,7 @@ Se ejecuta en implementación con la skill `frontend-design`. Lo que este spec f
 
 - Adaptador SSR, funciones serverless, cualquier backend propio.
 - MCP propio (el de contenido lo da Sanity).
+- Embeber el Studio en la app (decisión del 2026-09-06: standalone).
 - Migración de contenido o SEO desde overnatic.us.
 - Newsletter, comentarios, búsqueda.
 - Modo oscuro (se evalúa después del lanzamiento).

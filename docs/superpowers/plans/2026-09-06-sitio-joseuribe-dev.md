@@ -4,15 +4,18 @@
 
 **Goal:** Ship joseuribe.dev — a static Astro 7 site with Sanity as CMS: portfolio of 12 projects, services, about, trilingual blog and a contact form — as the first live instance of the "WordPress replacement" product Jose sells.
 
-**Architecture:** Astro 7 `output: 'static'` with native i18n (`en` at root, `/es`, `/pt`). Every page is a thin locale wrapper around a shared *view* component so page logic exists once. Content (projects, posts) lives in Sanity and is fetched at build time via the `sanity:client` virtual module; UI strings live in code (`src/i18n/ui.ts`). Sanity Studio is embedded at `/admin`. Publishing in Sanity triggers a Vercel rebuild via webhook.
+**Architecture:** Astro 7 `output: 'static'` with native i18n (`en` at root, `/es`, `/pt`). Every page is a thin locale wrapper around a shared *view* component so page logic exists once. Content (projects, posts) lives in Sanity and is fetched at build time via the `sanity:client` virtual module; UI strings live in code (`src/i18n/ui.ts`). **Sanity Studio is standalone** in the sibling repo `../studio-personal-site` (hosted at `https://joseuribe.sanity.studio`), never embedded. Publishing in Sanity triggers a Vercel rebuild via webhook.
 
-**Tech Stack:** Astro 7.3 · Tailwind CSS 4 (`@tailwindcss/vite`) · Sanity 6 (`@sanity/astro` 3.5, `@sanity/image-url`, `@portabletext/to-html`, `@sanity/code-input`) · shiki · Vitest 5 · Playwright (screenshots only) · `@vercel/analytics` + GA4 · Web3Forms · Vercel
+**Tech Stack:** Astro 7.3 · Tailwind CSS 4 (`@tailwindcss/vite`) · Sanity (`@sanity/astro` 3.5 for `sanity:client`, `@sanity/image-url`, `@portabletext/to-html`) · shiki · Vitest 5 · Playwright (screenshots only) · `@vercel/analytics` + GA4 · Web3Forms · Vercel. Studio (separate repo `../studio-personal-site`): Sanity 6, `@sanity/document-internationalization`, `sanity-plugin-internationalized-array`, `@sanity/code-input`.
 
 **Spec:** `docs/superpowers/specs/2026-09-06-sitio-joseuribe-dev-design.md` (technical) and `docs/superpowers/specs/2026-09-06-marca-personal-joseuribe-design.md` (brand, copy direction, distribution). Read both.
 
 ## Global Constraints
 
 - Astro **7.3.x**, `output: 'static'`. **No SSR adapter, no serverless functions, no custom backend.**
+- **The Studio is standalone** in `../studio-personal-site` (own git repo, project `rkr2s9sc`, dataset `production`). The app never embeds it and never imports `sanity`; `@sanity/astro` is used only for the `sanity:client` virtual module.
+- **Sanity localization (decided 2026-09-06 per `sanity-best-practices`):** `project.summary` and `project.caseStudy` are internationalized arrays — `[{ _key: 'en' | 'es' | 'pt', _type: 'internationalizedArray<Type>Value', value }]` — read with `coalesce(field[_key == $locale][0].value, field[_key == "en"][0].value)`. `post` is one document per language with a `language` field, linked by the plugin's `translation.metadata` documents. Never hand-link translations, never use localized `{en, es, pt}` objects.
+- **Never set deterministic `_id`s** on ordinary documents (Sanity global rule). Scripts find by slug and create-or-patch.
 - Locales: `en` (default, unprefixed), `es`, `pt`. Config already in `astro.config.mjs` — do not change `prefixDefaultLocale: false`.
 - **English is the original copy.** ES and PT are adaptations. PT may lag behind on blog content, never on fixed pages.
 - Voice: **first person singular**, direct, no agency jargon, no "we". Show the work, don't adjectivize it.
@@ -31,7 +34,7 @@ Tasks 5–10 need real Sanity data, so **these must be done before Task 4 runs**
 
 1. Create the Sanity project at https://sanity.io/manage (or `npx sanity@latest init --bare`). Put the ID in `.env` as `PUBLIC_SANITY_PROJECT_ID` (replace the `placeholder` value) and in Vercel → Settings → Environment Variables.
 2. Create a **write token** (Manage → API → Tokens → Editor) and put it in `.env` as `SANITY_API_TOKEN`. **Never** prefix it with `PUBLIC_`.
-3. Add `https://joseuribe.dev` and `http://localhost:4321` to Manage → API → CORS origins (with credentials) so the embedded Studio can log in.
+3. `npx sanity login` in a terminal (browser flow), then from `../studio-personal-site`: `npm run deploy-schema` (uploads the schema) and `npm run deploy` (hosts the Studio at `https://joseuribe.sanity.studio`; if the hostname is taken, change `studioHost` in `sanity.cli.ts`). Local editing works before that with `npm run dev` → http://localhost:3333.
 4. Download the Upwork screenshots for **Klicana, Miami Trading Lab, Avgust, Zohara** into `tmp/screenshots/` named exactly `klicana.png`, `miami-trading-lab.png`, `avgust.png`, `zohara.png`.
 5. A photo of Jose at `public/images/jose.jpg` (square or 4:5, ≥ 1200px). The About page renders it only if the file exists.
 6. GA4 property → `PUBLIC_GA4_ID`. Web3Forms access key → `PUBLIC_WEB3FORMS_KEY`. Optional Cal.com link → `PUBLIC_CAL_URL`. All in `.env` and in Vercel.
@@ -75,7 +78,7 @@ src/
   pages/es/…  pages/pt/…            same files, each 3–10 lines
   styles/global.css              Tailwind import + @theme tokens + fonts
   env.d.ts
-sanity/schema/*                  (exists) + sanity/structure.ts (desk)
+../studio-personal-site/        standalone Studio (separate repo): schemaTypes/, structure.ts, sanity.config.ts, sanity.cli.ts
 data/projects.json               the 12 projects, trilingual summaries, 4 EN case studies
 scripts/capture-screenshots.mjs  Playwright → tmp/screenshots/<slug>.png
 scripts/seed-projects.mjs        uploads screenshots + createOrReplace projects
@@ -180,11 +183,14 @@ const en = {
   'nav.contact': 'Contact',
   'nav.menu': 'Menu',
   'nav.lang': 'Language',
+  'nav.skip': 'Skip to content',
+  'nav.primary': 'Primary',
 
   'footer.built': 'Built with Astro and Sanity — the same stack I sell.',
   'footer.location': 'Cali, Colombia · US Eastern hours',
   'footer.rights': 'All rights reserved.',
 
+  'home.metaTitle': 'Jose Uribe — Full-stack developer · WordPress replacement in Astro',
   'home.eyebrow': 'Full-stack developer · Cali, Colombia',
   'home.h1': 'I build the site that replaces your WordPress.',
   'home.sub': 'Fast, secure, and editable without fear of breaking it. Astro plus a modern CMS, built by one developer you actually talk to — on US Eastern hours.',
@@ -217,6 +223,7 @@ const en = {
   'work.role': 'Role',
   'work.year': 'Year',
   'work.back': 'All work',
+  'work.screenshotOf': 'Screenshot of',
 
   'services.title': 'Services',
   'services.lead': 'Fixed scope, fixed price, paid once. No monthly plan to get started.',
@@ -276,11 +283,14 @@ const es: Record<UiKey, string> = {
   'nav.contact': 'Contacto',
   'nav.menu': 'Menú',
   'nav.lang': 'Idioma',
+  'nav.skip': 'Saltar al contenido',
+  'nav.primary': 'Principal',
 
   'footer.built': 'Hecho con Astro y Sanity — el mismo stack que vendo.',
   'footer.location': 'Cali, Colombia · horario de la costa este de EE.UU.',
   'footer.rights': 'Todos los derechos reservados.',
 
+  'home.metaTitle': 'Jose Uribe — Desarrollador full-stack · Reemplazo de WordPress en Astro',
   'home.eyebrow': 'Desarrollador full-stack · Cali, Colombia',
   'home.h1': 'Construyo el sitio que reemplaza tu WordPress.',
   'home.sub': 'Rápido, seguro y editable sin miedo a romperlo. Astro con un CMS moderno, hecho por un desarrollador con el que hablas de verdad.',
@@ -313,6 +323,7 @@ const es: Record<UiKey, string> = {
   'work.role': 'Rol',
   'work.year': 'Año',
   'work.back': 'Todo el trabajo',
+  'work.screenshotOf': 'Captura de',
 
   'services.title': 'Servicios',
   'services.lead': 'Alcance cerrado, precio fijo, pago único. Sin mensualidad para empezar.',
@@ -370,11 +381,14 @@ const pt: Record<UiKey, string> = {
   'nav.contact': 'Contato',
   'nav.menu': 'Menu',
   'nav.lang': 'Idioma',
+  'nav.skip': 'Pular para o conteúdo',
+  'nav.primary': 'Principal',
 
   'footer.built': 'Feito com Astro e Sanity — a mesma stack que eu vendo.',
   'footer.location': 'Cali, Colômbia · horário da costa leste dos EUA',
   'footer.rights': 'Todos os direitos reservados.',
 
+  'home.metaTitle': 'Jose Uribe — Desenvolvedor full-stack · Substituição do WordPress em Astro',
   'home.eyebrow': 'Desenvolvedor full-stack · Cali, Colômbia',
   'home.h1': 'Eu construo o site que substitui o seu WordPress.',
   'home.sub': 'Rápido, seguro e editável sem medo de quebrar. Astro com um CMS moderno, feito por um desenvolvedor com quem você fala de verdade.',
@@ -407,6 +421,7 @@ const pt: Record<UiKey, string> = {
   'work.role': 'Papel',
   'work.year': 'Ano',
   'work.back': 'Todo o trabalho',
+  'work.screenshotOf': 'Captura de',
 
   'services.title': 'Serviços',
   'services.lead': 'Escopo fechado, preço fixo, pagamento único. Sem mensalidade para começar.',
@@ -649,7 +664,7 @@ const isActive = (href: string) => current === localizePath(href, locale) || cur
 ---
 <header class="wrap flex items-center justify-between py-6">
   <a href={localizePath('/', locale)} class="font-display text-xl tracking-tight">Jose Uribe</a>
-  <nav aria-label="Primary" class="hidden items-center gap-7 text-sm md:flex">
+  <nav aria-label={tr('nav.primary')} class="hidden items-center gap-7 text-sm md:flex">
     {items.map(([href, label]) => (
       <a href={localizePath(href, locale)} class:list={['hover:text-ink', isActive(href) ? 'text-ink font-medium' : 'text-ink-mut']} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>
     ))}
@@ -658,7 +673,7 @@ const isActive = (href: string) => current === localizePath(href, locale) || cur
   </nav>
   <details class="md:hidden">
     <summary class="btn-ghost cursor-pointer list-none py-2!">{tr('nav.menu')}</summary>
-    <nav aria-label="Primary" class="absolute inset-x-0 z-20 mt-3 flex flex-col gap-1 border-y border-line bg-paper px-5 py-4 text-base">
+    <nav aria-label={tr('nav.primary')} class="absolute inset-x-0 z-20 mt-3 flex flex-col gap-1 border-y border-line bg-paper px-5 py-4 text-base">
       {items.map(([href, label]) => (
         <a href={localizePath(href, locale)} class="py-2">{label}</a>
       ))}
@@ -720,7 +735,7 @@ const { eyebrow, title, lead, as: Tag = 'h2' } = Astro.props;
 ---
 import '../styles/global.css';
 import Analytics from '@vercel/analytics/astro';
-import { LOCALES, DEFAULT_LOCALE, localizePath, stripLocale, type Locale } from '../i18n/ui';
+import { LOCALES, DEFAULT_LOCALE, localizePath, stripLocale, t, type Locale } from '../i18n/ui';
 import { site } from '../config/site';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -741,6 +756,7 @@ const altHref = (l: Locale) => new URL(alternates?.[l] ?? localizePath(path, l),
 const canonical = altHref(locale);
 const ogLocale = { en: 'en_US', es: 'es_CO', pt: 'pt_BR' }[locale];
 const ga4 = site.ga4Id;
+const tr = t(locale);
 ---
 <!doctype html>
 <html lang={locale === 'pt' ? 'pt-BR' : locale}>
@@ -778,7 +794,7 @@ const ga4 = site.ga4Id;
     )}
   </head>
   <body class="min-h-dvh">
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-ink focus:px-3 focus:py-2 focus:text-paper">Skip to content</a>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-ink focus:px-3 focus:py-2 focus:text-paper">{tr('nav.skip')}</a>
     <Header {locale} {alternates} />
     <main id="main">
       <slot />
@@ -852,15 +868,14 @@ git commit -m "feat(layout): design tokens, fonts, Base layout with SEO head, he
 
 ---
 
-### Task 3: Sanity data layer, Portable Text renderer, desk structure
+### Task 3: Sanity data layer and Portable Text renderer
 
 **Files:**
-- Create: `src/env.d.ts`, `src/lib/content.ts`, `src/lib/content.test.ts`, `src/lib/sanity.ts`, `src/lib/portable-text.ts`, `src/lib/portable-text.test.ts`, `sanity/structure.ts`
-- Modify: `sanity.config.ts`
+- Create: `src/env.d.ts`, `src/lib/content.ts`, `src/lib/content.test.ts`, `src/lib/sanity.ts`, `src/lib/portable-text.ts`, `src/lib/portable-text.test.ts`
 
 **Interfaces:**
-- Produces (from `content.ts`): types `Localized<T> = { en: T; es?: T; pt?: T }`, `ProjectKind = 'app'|'site'|'wordpress'`, `ProjectStatus = 'live'|'offline'|'parked'`, `SanityImage = { _type:'image'; asset:{ _ref:string }; hotspot?:unknown; crop?:unknown }`, `Project`, `Post`, `PostTranslation = { language: Locale; slug: string }`; `pickLocale<T>(v: Localized<T>|undefined, locale: Locale): T|undefined`; GROQ constants `PROJECTS_QUERY`, `PROJECT_BY_SLUG_QUERY`, `PROJECT_SLUGS_WITH_CASE_QUERY`, `POSTS_QUERY`, `POST_BY_SLUG_QUERY`.
-- Produces (from `sanity.ts`): `getProjects(): Promise<Project[]>`, `getFeaturedProjects(): Promise<Project[]>`, `getProjectBySlug(slug): Promise<Project|null>`, `getCaseStudySlugs(): Promise<string[]>`, `getPosts(locale): Promise<Post[]>`, `getPostBySlug(locale, slug): Promise<Post|null>`, `urlFor(src: SanityImage)` (image-url builder).
+- Produces (from `content.ts`): types `ProjectKind = 'app'|'site'|'wordpress'`, `ProjectStatus = 'live'|'offline'|'parked'`, `SanityImage = { _type:'image'; asset:{ _ref:string }; hotspot?:unknown; crop?:unknown }`, `Project` (with `summary: string` and `caseStudy: unknown[] | null` **already resolved for the requested locale by GROQ**), `Post`, `PostTranslation = { language: Locale; slug: string | null }`; `otherTranslations(post, locale): PostTranslation[]`; GROQ constants `PROJECTS_QUERY`, `FEATURED_PROJECTS_QUERY`, `PROJECT_BY_SLUG_QUERY`, `PROJECT_SLUGS_WITH_CASE_QUERY`, `POSTS_QUERY`, `POST_BY_SLUG_QUERY` — every project query takes `$locale`.
+- Produces (from `sanity.ts`): `getProjects(locale): Promise<Project[]>`, `getFeaturedProjects(locale): Promise<Project[]>`, `getProjectBySlug(locale, slug): Promise<Project|null>`, `getCaseStudySlugs(): Promise<string[]>`, `getPosts(locale): Promise<Post[]>`, `getPostBySlug(locale, slug): Promise<Post|null>`, `urlFor(src: SanityImage)` (image-url builder).
 - Produces (from `portable-text.ts`): `renderPortableText(blocks: unknown[], opts?: { highlight?: (code:string, lang:string)=>Promise<string> }): Promise<string>`.
 
 - [ ] **Step 1: Install runtime deps**
@@ -890,29 +905,35 @@ interface ImportMetaEnv {
 
 ```ts
 import { describe, it, expect } from 'vitest';
-import { pickLocale, PROJECTS_QUERY, POSTS_QUERY } from './content';
+import { otherTranslations, PROJECTS_QUERY, POSTS_QUERY, type Post } from './content';
 
-describe('pickLocale', () => {
-  it('returns the requested locale', () => {
-    expect(pickLocale({ en: 'a', es: 'b' }, 'es')).toBe('b');
+const post = (language: 'en' | 'es' | 'pt', translations: Post['translations']): Post =>
+  ({ _id: 'x', title: 't', slug: 's', language, excerpt: '', body: [], publishedAt: '', translations }) as Post;
+
+describe('otherTranslations', () => {
+  it('drops the current language and unpublished translations', () => {
+    const p = post('en', [
+      { language: 'en', slug: 'hello' },
+      { language: 'es', slug: 'hola' },
+      { language: 'pt', slug: null },
+    ]);
+    expect(otherTranslations(p, 'en')).toEqual([{ language: 'es', slug: 'hola' }]);
   });
-  it('falls back to English when the locale is missing or empty', () => {
-    expect(pickLocale({ en: 'a', es: '' }, 'es')).toBe('a');
-    expect(pickLocale({ en: 'a' }, 'pt')).toBe('a');
-  });
-  it('returns undefined for undefined input', () => {
-    expect(pickLocale(undefined, 'en')).toBeUndefined();
+  it('returns an empty list when there are no translations', () => {
+    expect(otherTranslations(post('es', []), 'es')).toEqual([]);
   });
 });
 
 describe('queries', () => {
-  it('project query projects slug as a string and orders by order', () => {
+  it('project query resolves localized summary with English fallback and orders by order', () => {
     expect(PROJECTS_QUERY).toContain('"slug": slug.current');
     expect(PROJECTS_QUERY).toContain('order(order asc)');
+    expect(PROJECTS_QUERY).toContain('coalesce(summary[_key == $locale][0].value, summary[_key == "en"][0].value)');
   });
-  it('posts query filters by language and excludes drafts', () => {
+  it('posts query filters by language, excludes drafts, and resolves translations via metadata', () => {
     expect(POSTS_QUERY).toContain('language == $locale');
     expect(POSTS_QUERY).toContain('!(_id in path("drafts.**"))');
+    expect(POSTS_QUERY).toContain('_type == "translation.metadata"');
   });
 });
 ```
@@ -927,7 +948,6 @@ Expected: FAIL — `Cannot find module './content'`
 ```ts
 import type { Locale } from '../i18n/ui';
 
-export type Localized<T> = { en: T; es?: T; pt?: T };
 export type ProjectKind = 'app' | 'site' | 'wordpress';
 export type ProjectStatus = 'live' | 'offline' | 'parked';
 export type SanityImage = { _type: 'image'; asset: { _ref: string }; hotspot?: unknown; crop?: unknown };
@@ -946,11 +966,14 @@ export type Project = {
   screenshot: SanityImage;
   featured?: boolean;
   order?: number;
-  summary: Localized<string>;
-  caseStudy?: Localized<unknown[]>;
+  /** Already resolved for $locale by GROQ, with English fallback. */
+  summary: string;
+  /** Portable Text for $locale (English fallback), or null when the project has no case study. */
+  caseStudy: unknown[] | null;
 };
 
-export type PostTranslation = { language: Locale; slug: string };
+/** `slug` is null when that translation exists only as a draft. */
+export type PostTranslation = { language: Locale; slug: string | null };
 
 export type Post = {
   _id: string;
@@ -961,33 +984,38 @@ export type Post = {
   body: unknown[];
   cover?: SanityImage;
   publishedAt: string;
+  /** Every language version linked by translation.metadata, including this document's own. */
   translations: PostTranslation[];
 };
 
-export function pickLocale<T>(v: Localized<T> | undefined, locale: Locale): T | undefined {
-  if (!v) return undefined;
-  const chosen = v[locale];
-  const empty = chosen === undefined || chosen === null || (typeof chosen === 'string' && chosen.trim() === '') || (Array.isArray(chosen) && chosen.length === 0);
-  return empty ? v.en : chosen;
+/** The other published language versions of a post — for hreflang and the "also available in" line. */
+export function otherTranslations(post: Post, locale: Locale): PostTranslation[] {
+  return post.translations.filter((t) => t.language !== locale && t.slug !== null);
 }
+
+// Internationalized arrays (sanity-plugin-internationalized-array): [{ _key: locale, value }].
+const i18n = (field: string) => `coalesce(${field}[_key == $locale][0].value, ${field}[_key == "en"][0].value)`;
 
 const PROJECT_FIELDS = `
   _id, title, "slug": slug.current, kind, client, role, year, stack, url, status,
-  screenshot, featured, order, summary, caseStudy
+  screenshot, featured, order,
+  "summary": ${i18n('summary')},
+  "caseStudy": ${i18n('caseStudy')}
 `;
 
 export const PROJECTS_QUERY = `*[_type == "project" && !(_id in path("drafts.**")) && defined(screenshot)] | order(order asc) { ${PROJECT_FIELDS} }`;
 export const FEATURED_PROJECTS_QUERY = `*[_type == "project" && !(_id in path("drafts.**")) && defined(screenshot) && featured == true] | order(order asc) [0...4] { ${PROJECT_FIELDS} }`;
 export const PROJECT_BY_SLUG_QUERY = `*[_type == "project" && !(_id in path("drafts.**")) && slug.current == $slug][0] { ${PROJECT_FIELDS} }`;
-export const PROJECT_SLUGS_WITH_CASE_QUERY = `*[_type == "project" && !(_id in path("drafts.**")) && defined(screenshot) && defined(caseStudy.en) && count(caseStudy.en) > 0].slug.current`;
+export const PROJECT_SLUGS_WITH_CASE_QUERY = `*[_type == "project" && !(_id in path("drafts.**")) && defined(screenshot) && count(caseStudy[_key == "en"][0].value) > 0].slug.current`;
 
+// Translations come from the @sanity/document-internationalization metadata document.
+// `value->slug.current` is null for translations that exist only as drafts.
 const POST_FIELDS = `
   _id, title, "slug": slug.current, language, excerpt, body, cover, publishedAt,
-  "translations": *[_type == "post" && !(_id in path("drafts.**")) && _id != ^._id && (
-      translationOf._ref == ^._id ||
-      _id == ^.translationOf._ref ||
-      (defined(^.translationOf) && translationOf._ref == ^.translationOf._ref)
-  )] { language, "slug": slug.current }
+  "translations": coalesce(
+    *[_type == "translation.metadata" && references(^._id)][0].translations[] { "language": _key, "slug": value->slug.current },
+    []
+  )
 `;
 
 export const POSTS_QUERY = `*[_type == "post" && !(_id in path("drafts.**")) && language == $locale && publishedAt <= now()] | order(publishedAt desc) { ${POST_FIELDS} }`;
@@ -1014,9 +1042,9 @@ import {
 const builder = imageUrlBuilder(sanityClient);
 export const urlFor = (src: SanityImage) => builder.image(src).auto('format');
 
-export const getProjects = () => sanityClient.fetch<Project[]>(PROJECTS_QUERY);
-export const getFeaturedProjects = () => sanityClient.fetch<Project[]>(FEATURED_PROJECTS_QUERY);
-export const getProjectBySlug = (slug: string) => sanityClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
+export const getProjects = (locale: Locale) => sanityClient.fetch<Project[]>(PROJECTS_QUERY, { locale });
+export const getFeaturedProjects = (locale: Locale) => sanityClient.fetch<Project[]>(FEATURED_PROJECTS_QUERY, { locale });
+export const getProjectBySlug = (locale: Locale, slug: string) => sanityClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { locale, slug });
 export const getCaseStudySlugs = () => sanityClient.fetch<string[]>(PROJECT_SLUGS_WITH_CASE_QUERY);
 export const getPosts = (locale: Locale) => sanityClient.fetch<Post[]>(POSTS_QUERY, { locale });
 export const getPostBySlug = (locale: Locale, slug: string) => sanityClient.fetch<Post | null>(POST_BY_SLUG_QUERY, { locale, slug });
@@ -1056,6 +1084,16 @@ describe('renderPortableText', () => {
     expect(html).toContain('alt="A chart"');
     expect(html).toContain('loading="lazy"');
   });
+
+  it('escapes quotes and ampersands in alt text and image urls (attribute context)', async () => {
+    const html = await renderPortableText(
+      [{ _type: 'image', _key: 'i', alt: 'She said "hi" & left', asset: { _ref: 'image-abc123-800x600-png' } }],
+      { imageUrl: () => 'https://cdn.example/a.png?w=1&h=2' },
+    );
+    expect(html).toContain('alt="She said &quot;hi&quot; &amp; left"');
+    expect(html).toContain('src="https://cdn.example/a.png?w=1&amp;h=2"');
+    expect(html).not.toContain('"hi"');
+  });
 });
 ```
 
@@ -1092,7 +1130,9 @@ function defaultImageUrl(block: ImageBlock): string {
   return `/_sanity-image-missing/${block.asset._ref}`;
 }
 
-const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// Attribute-safe escaper: encodes &, <, >, and both quote characters.
+const escape = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 export async function renderPortableText(blocks: unknown[], opts: RenderOptions = {}): Promise<string> {
   const highlight = opts.highlight ?? defaultHighlight;
@@ -1114,7 +1154,7 @@ export async function renderPortableText(blocks: unknown[], opts: RenderOptions 
       html: ({ value }) => (value as { html: string }).html,
       image: ({ value }) => {
         const v = value as ImageBlock;
-        return `<img src="${imageUrl(v)}" alt="${escape(v.alt ?? '')}" loading="lazy" decoding="async" />`;
+        return `<img src="${escape(imageUrl(v))}" alt="${escape(v.alt ?? '')}" loading="lazy" decoding="async" />`;
       },
     },
   };
@@ -1128,59 +1168,30 @@ export async function renderPortableText(blocks: unknown[], opts: RenderOptions 
 Run: `npm test`
 Expected: PASS (all)
 
-- [ ] **Step 12: Desk structure for the Studio**
-
-`sanity/structure.ts`:
-
-```ts
-import type { StructureResolver } from 'sanity/structure';
-
-export const structure: StructureResolver = (S) =>
-  S.list()
-    .title('Content')
-    .items([
-      S.listItem().title('Projects').child(
-        S.documentTypeList('project').title('Projects').defaultOrdering([{ field: 'order', direction: 'asc' }]),
-      ),
-      S.divider(),
-      S.listItem().title('Posts · English').child(
-        S.documentTypeList('post').title('Posts · English').filter('_type == "post" && language == "en"').defaultOrdering([{ field: 'publishedAt', direction: 'desc' }]),
-      ),
-      S.listItem().title('Posts · Español').child(
-        S.documentTypeList('post').title('Posts · Español').filter('_type == "post" && language == "es"').defaultOrdering([{ field: 'publishedAt', direction: 'desc' }]),
-      ),
-      S.listItem().title('Posts · Português').child(
-        S.documentTypeList('post').title('Posts · Português').filter('_type == "post" && language == "pt"').defaultOrdering([{ field: 'publishedAt', direction: 'desc' }]),
-      ),
-    ]);
-```
-
-Modify `sanity.config.ts`: import `{ structure } from './sanity/structure'` and change `structureTool()` to `structureTool({ structure })`.
-
-- [ ] **Step 13: Build and type-check**
+- [ ] **Step 12: Build and type-check**
 
 Run: `npx astro check && npm run build`
 Expected: 0 errors; build completes.
 
-- [ ] **Step 14: Commit**
+- [ ] **Step 13: Commit**
 
 ```bash
-git add src/env.d.ts src/lib sanity/structure.ts sanity.config.ts package.json package-lock.json
-git commit -m "feat(content): Sanity types, GROQ queries, fetchers, Portable Text renderer, desk structure"
+git add src/env.d.ts src/lib package.json package-lock.json
+git commit -m "feat(content): Sanity types, GROQ queries, fetchers, Portable Text renderer"
 ```
 
 ---
 
 ### Task 4: Project data, screenshots and seed script
 
-> **Gate:** Prerequisites 1–4 done (`PUBLIC_SANITY_PROJECT_ID` real, `SANITY_API_TOKEN` set, Upwork screenshots in `tmp/screenshots/`).
+> **Gate:** Prerequisites 1–2 done (`PUBLIC_SANITY_PROJECT_ID` real, `SANITY_API_TOKEN` set). The four Upwork screenshots are **optional for now** (decision 2026-09-06): projects without a screenshot are skipped by the seed and appear once the PNGs are dropped into `tmp/screenshots/` and the seed is re-run — it patches by slug.
 
 **Files:**
 - Create: `data/projects.json`, `scripts/capture-screenshots.mjs`, `scripts/seed-projects.mjs`
 - Modify: `.gitignore` (add `tmp/`), `.env.example` (add `SANITY_API_TOKEN=`)
 
 **Interfaces:**
-- Produces: 12 `project` documents in Sanity with `_id: project-<slug>`; the four with `caseStudy.en` are `armony`, `avgust`, `klicana`, `enlace`.
+- Produces: 12 published `project` documents in Sanity (Sanity-generated `_id`s; re-runs find them by slug and patch); the four with an English `caseStudy` are `armony`, `avgust`, `klicana`, `enlace`.
 
 - [ ] **Step 1: Install Playwright (dev) and its Chromium**
 
@@ -1486,7 +1497,7 @@ await browser.close();
 Run: `node scripts/capture-screenshots.mjs && ls tmp/screenshots/`
 Expected: 8 files — `armony.png enlace.png stephania-lopez.png serendipia.png hablo-portugues.png affine.png siamo.png overnatic.png`. Open two of them and confirm they show the actual site, not a cookie banner or an error page. If a site shows a cookie banner, add a `page.click()` for its accept button inside the try block for that slug.
 
-Confirm the four manual files are present: `ls tmp/screenshots/{klicana,miami-trading-lab,avgust,zohara}.png`.
+The four Upwork files (`klicana.png`, `miami-trading-lab.png`, `avgust.png`, `zohara.png`) are added by Jose whenever available; their absence is expected today and produces explicit `skip` lines in the next step.
 
 - [ ] **Step 5: Write `scripts/seed-projects.mjs`**
 
@@ -1506,11 +1517,16 @@ if (!projectId || projectId === 'placeholder' || !token) {
 const client = createClient({ projectId, dataset, token, apiVersion: '2026-09-01', useCdn: false });
 const projects = JSON.parse(readFileSync(new URL('../data/projects.json', import.meta.url), 'utf8'));
 
+const key = () => randomUUID().slice(0, 12);
 const toBlocks = (paragraphs) =>
   paragraphs.map((text) => ({
-    _type: 'block', _key: randomUUID().slice(0, 12), style: 'normal', markDefs: [],
-    children: [{ _type: 'span', _key: randomUUID().slice(0, 12), text, marks: [] }],
+    _type: 'block', _key: key(), style: 'normal', markDefs: [],
+    children: [{ _type: 'span', _key: key(), text, marks: [] }],
   }));
+
+// sanity-plugin-internationalized-array shapes: [{ _key: locale, _type: 'internationalizedArray<Type>Value', value }]
+const i18nText = (obj) => Object.entries(obj).map(([lang, value]) => ({ _key: lang, _type: 'internationalizedArrayTextValue', value }));
+const i18nRich = (obj) => Object.entries(obj).map(([lang, paragraphs]) => ({ _key: lang, _type: 'internationalizedArrayRichTextValue', value: toBlocks(paragraphs) }));
 
 let published = 0;
 for (const p of projects) {
@@ -1520,9 +1536,7 @@ for (const p of projects) {
     continue;
   }
   const asset = await client.assets.upload('image', createReadStream(file), { filename: `${p.slug}.png` });
-  const doc = {
-    _id: `project-${p.slug}`,
-    _type: 'project',
+  const fields = {
     title: p.title,
     slug: { _type: 'slug', current: p.slug },
     kind: p.kind,
@@ -1535,12 +1549,19 @@ for (const p of projects) {
     featured: p.featured,
     order: p.order,
     screenshot: { _type: 'image', asset: { _type: 'reference', _ref: asset._id } },
-    summary: { _type: 'localeText', ...p.summary },
-    ...(p.caseStudy ? { caseStudy: { _type: 'localeBlock', en: toBlocks(p.caseStudy.en) } } : {}),
+    summary: i18nText(p.summary),
+    caseStudy: p.caseStudy ? i18nRich(p.caseStudy) : undefined,
   };
-  await client.createOrReplace(doc);
+  // Sanity rule: never invent _ids. Find by slug; patch if it exists, create otherwise.
+  const existingId = await client.fetch('*[_type == "project" && slug.current == $slug][0]._id', { slug: p.slug });
+  if (existingId) {
+    await client.patch(existingId).set(fields).unset(p.caseStudy ? [] : ['caseStudy']).commit();
+    console.log('↻', p.slug, '(updated)');
+  } else {
+    await client.create({ _type: 'project', ...fields });
+    console.log('✓', p.slug);
+  }
   published++;
-  console.log('✓', p.slug);
 }
 console.log(`${published}/${projects.length} projects published`);
 ```
@@ -1548,9 +1569,9 @@ console.log(`${published}/${projects.length} projects published`);
 - [ ] **Step 6: Run the seed and verify in the Studio**
 
 Run: `node --env-file=.env scripts/seed-projects.mjs`
-Expected: `12/12 projects published` (or fewer with explicit `skip` lines naming which screenshot is missing).
+Expected: `N/12 projects published` where N equals the number of PNGs in `tmp/screenshots/` (8 today), with one explicit `skip` line per missing screenshot.
 
-Then `npm run dev`, open `http://localhost:4321/admin`, log in, open **Projects**: 12 documents in manual order, each with a screenshot. Open Armony: `caseStudy.en` has three paragraphs.
+Then in `../studio-personal-site` run `npm run dev`, open http://localhost:3333, log in, open **Projects**: one document per seeded project (8 today), in manual order, each with a screenshot and a language tab bar on Summary. Open Armony: the Case study field shows three paragraphs under EN and empty ES/PT tabs.
 
 - [ ] **Step 7: Commit**
 
@@ -1567,7 +1588,7 @@ git commit -m "feat(content): 12 projects dataset, screenshot capture and Sanity
 - Create: `src/components/ProjectCard.astro`, `src/components/ProjectGrid.astro`, `src/views/WorkIndexView.astro`, `src/views/WorkDetailView.astro`, `src/lib/seo.ts`, `src/lib/seo.test.ts`, `src/pages/work/index.astro`, `src/pages/work/[slug].astro`, `src/pages/es/work/index.astro`, `src/pages/es/work/[slug].astro`, `src/pages/pt/work/index.astro`, `src/pages/pt/work/[slug].astro`
 
 **Interfaces:**
-- Consumes: `getProjects`, `getProjectBySlug`, `getCaseStudySlugs`, `urlFor` (sanity.ts); `pickLocale`, `Project` (content.ts); `renderPortableText`; `t`, `localizePath`.
+- Consumes: `getProjects(locale)`, `getProjectBySlug(locale, slug)`, `getCaseStudySlugs()`, `urlFor` (sanity.ts); `Project` (content.ts — `summary` and `caseStudy` already localized); `renderPortableText`; `t`, `localizePath`.
 - Produces: `seo.ts` → `personJsonLd()`, `creativeWorkJsonLd(project, locale)`, `articleJsonLd(post, locale)`; `ProjectCard` props `{ project: Project; locale: Locale; eager?: boolean }`; `ProjectGrid` props `{ projects: Project[]; locale: Locale; filter?: boolean }`.
 
 - [ ] **Step 1: Failing tests for `seo.ts`**
@@ -1586,8 +1607,8 @@ describe('JSON-LD builders', () => {
     expect(p.url).toBe('https://joseuribe.dev');
     expect(p.sameAs).toContain('https://www.upwork.com/freelancers/joseuribeh');
   });
-  it('creative work uses the localized summary and the case-study url', () => {
-    const cw = creativeWorkJsonLd({ slug: 'armony', title: 'Armony', summary: { en: 'EN', es: 'ES' } } as any, 'es');
+  it('creative work uses the summary and the localized case-study url', () => {
+    const cw = creativeWorkJsonLd({ slug: 'armony', title: 'Armony', summary: 'ES' } as any, 'es');
     expect(cw['@type']).toBe('CreativeWork');
     expect(cw.description).toBe('ES');
     expect(cw.url).toBe('https://joseuribe.dev/es/work/armony');
@@ -1611,7 +1632,7 @@ Run: `npm test` — Expected: FAIL, `Cannot find module './seo'`
 ```ts
 import { site } from '../config/site';
 import { localizePath, type Locale } from '../i18n/ui';
-import { pickLocale, type Project, type Post } from './content';
+import type { Project, Post } from './content';
 
 const abs = (path: string, locale: Locale) => new URL(localizePath(path, locale), site.url).href;
 
@@ -1634,7 +1655,7 @@ export function creativeWorkJsonLd(project: Project, locale: Locale) {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
     name: project.title,
-    description: pickLocale(project.summary, locale),
+    description: project.summary,
     url: abs(`/work/${project.slug}`, locale),
     author: { '@type': 'Person', name: site.name, url: site.url },
     ...(project.year ? { dateCreated: String(project.year) } : {}),
@@ -1664,7 +1685,7 @@ Run: `npm test` — Expected: PASS
 ```astro
 ---
 import { t, localizePath, type Locale } from '../i18n/ui';
-import { pickLocale, type Project } from '../lib/content';
+import type { Project } from '../lib/content';
 import { urlFor } from '../lib/sanity';
 interface Props { project: Project; locale: Locale; eager?: boolean; hasCase?: boolean }
 const { project: p, locale, eager = false, hasCase = false } = Astro.props;
@@ -1674,15 +1695,18 @@ const img2x = urlFor(p.screenshot).width(2400).height(1500).fit('crop').url();
 const kindLabel = { app: tr('work.filterApp'), site: tr('work.filterSite'), wordpress: tr('work.filterWp') }[p.kind];
 const caseHref = hasCase ? localizePath(`/work/${p.slug}`, locale) : null;
 const live = p.status === 'live' && p.url;
+// No destination → no anchor. An <a> without href is unfocusable and confusing to assistive tech.
+const Wrapper = caseHref || live ? 'a' : 'div';
+const alt = `${tr('work.screenshotOf')} ${p.title}`;
 ---
 <article class="group flex flex-col gap-4" data-kind={p.kind}>
-  <a href={caseHref ?? (live ? p.url! : undefined)} target={caseHref ? undefined : live ? '_blank' : undefined} rel={caseHref ? undefined : 'noopener'} class="block overflow-hidden rounded-xl border border-line bg-paper-pure shadow-sm" data-outbound={!caseHref && live ? p.slug : undefined}>
-    <img src={img} srcset={`${img} 1200w, ${img2x} 2400w`} sizes="(min-width: 768px) 50vw, 100vw" width="1200" height="750" alt={`Screenshot of ${p.title}`} loading={eager ? 'eager' : 'lazy'} decoding="async" class="aspect-[8/5] w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]" />
-  </a>
+  <Wrapper href={caseHref ?? (live ? p.url! : undefined)} target={caseHref ? undefined : live ? '_blank' : undefined} rel={caseHref ? undefined : live ? 'noopener' : undefined} class="block overflow-hidden rounded-xl border border-line bg-paper-pure shadow-sm" data-outbound={!caseHref && live ? p.slug : undefined}>
+    <img src={img} srcset={`${img} 1200w, ${img2x} 2400w`} sizes="(min-width: 768px) 50vw, 100vw" width="1200" height="750" alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" class="aspect-[8/5] w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]" />
+  </Wrapper>
   <div>
     <p class="eyebrow">{kindLabel}{p.year ? ` · ${p.year}` : ''}</p>
     <h3 class="mt-1 text-xl">{p.title}</h3>
-    <p class="mt-2 text-ink-mut">{pickLocale(p.summary, locale)}</p>
+    <p class="mt-2 text-ink-mut">{p.summary}</p>
     <div class="mt-3 flex flex-wrap gap-4 text-sm">
       {caseHref && <a href={caseHref} class="text-accent underline underline-offset-4">{tr('work.caseStudy')}</a>}
       {live && <a href={p.url!} target="_blank" rel="noopener" class="text-ink-mut hover:text-ink" data-outbound={p.slug}>{tr('work.viewSite')} ↗</a>}
@@ -1741,7 +1765,7 @@ import { getProjects, getCaseStudySlugs } from '../lib/sanity';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
-const [projects, caseSlugs] = await Promise.all([getProjects(), getCaseStudySlugs()]);
+const [projects, caseSlugs] = await Promise.all([getProjects(locale), getCaseStudySlugs()]);
 ---
 <Base {locale} title={`${tr('work.title')} — Jose Uribe`} description={tr('work.lead')}>
   <section class="wrap py-16 md:py-24">
@@ -1759,17 +1783,17 @@ const [projects, caseSlugs] = await Promise.all([getProjects(), getCaseStudySlug
 ---
 import Base from '../layouts/Base.astro';
 import { t, localizePath, type Locale } from '../i18n/ui';
-import { pickLocale, type Project } from '../lib/content';
+import type { Project } from '../lib/content';
 import { urlFor } from '../lib/sanity';
 import { renderPortableText } from '../lib/portable-text';
 import { creativeWorkJsonLd } from '../lib/seo';
 interface Props { locale: Locale; project: Project }
 const { locale, project: p } = Astro.props;
 const tr = t(locale);
-const body = pickLocale(p.caseStudy, locale) ?? [];
-const html = await renderPortableText(body, { imageUrl: (b) => urlFor(b as any).width(1400).url() });
-const hero = urlFor(p.screenshot).width(1600).url();
-const summary = pickLocale(p.summary, locale) ?? '';
+const html = await renderPortableText(p.caseStudy ?? [], { imageUrl: (b) => urlFor(b as any).width(1400).url() });
+const hero = urlFor(p.screenshot).width(1600).height(1000).fit('crop').url();
+const summary = p.summary;
+const alt = `${tr('work.screenshotOf')} ${p.title}`;
 const live = p.status === 'live' && p.url;
 ---
 <Base {locale} title={`${p.title} — Jose Uribe`} description={summary} ogImage={urlFor(p.screenshot).width(1200).height(630).fit('crop').url()} jsonLd={creativeWorkJsonLd(p, locale)}>
@@ -1783,7 +1807,7 @@ const live = p.status === 'live' && p.url;
       {p.year && <div><dt class="eyebrow">{tr('work.year')}</dt><dd class="mt-1">{p.year}</dd></div>}
       {p.stack && p.stack.length > 0 && <div class="col-span-2 md:col-span-1"><dt class="eyebrow">{tr('work.stack')}</dt><dd class="mt-1">{p.stack.join(' · ')}</dd></div>}
     </dl>
-    <img src={hero} width="1600" alt={`Screenshot of ${p.title}`} loading="eager" decoding="async" class="mt-12 w-full rounded-xl border border-line" />
+    <img src={hero} width="1600" height="1000" alt={alt} loading="eager" decoding="async" class="mt-12 w-full rounded-xl border border-line" />
     <div class="prose-site mt-12" set:html={html} />
     {live && <p class="mt-10"><a href={p.url!} target="_blank" rel="noopener" class="btn-primary" data-outbound={p.slug}>{tr('work.viewSite')} ↗</a></p>}
   </article>
@@ -1811,31 +1835,33 @@ import WorkDetailView from '../../views/WorkDetailView.astro';
 import { getCaseStudySlugs, getProjectBySlug } from '../../lib/sanity';
 export async function getStaticPaths() {
   const slugs = await getCaseStudySlugs();
-  return Promise.all(slugs.map(async (slug) => ({ params: { slug }, props: { project: (await getProjectBySlug(slug))! } })));
+  return Promise.all(slugs.map(async (slug) => ({ params: { slug }, props: { project: (await getProjectBySlug('en', slug))! } })));
 }
 const { project } = Astro.props;
 ---
 <WorkDetailView locale="en" {project} />
 ```
 
-`src/pages/es/work/[slug].astro` and `src/pages/pt/work/[slug].astro`: identical with `locale="es"` / `locale="pt"` and `../../../` import paths.
+`src/pages/es/work/[slug].astro` and `src/pages/pt/work/[slug].astro`: identical with `getProjectBySlug('es', slug)` / `getProjectBySlug('pt', slug)`, `locale="es"` / `locale="pt"`, and `../../../` import paths.
 
-- [ ] **Step 9: Build and assert**
+- [ ] **Step 9: Build and assert** (expectations derive from which screenshots exist, so the same check holds with 8 projects today and 12 later)
 
 ```bash
 npm run build && node -e "
 const fs=require('fs');
+const all=JSON.parse(fs.readFileSync('data/projects.json','utf8'));
+const seeded=all.filter(p=>fs.existsSync('tmp/screenshots/'+p.slug+'.png'));
+const withCase=seeded.filter(p=>p.caseStudy).map(p=>p.slug);
 const idx=fs.readFileSync('dist/work/index.html','utf8');
-const cards=(idx.match(/data-kind=/g)||[]).length; if(cards!==12){console.error('expected 12 cards, got',cards);process.exit(1)}
-if(!/Temporarily offline/.test(idx)){console.error('Zohara parked label missing');process.exit(1)}
-if(/href=\"https:\/\/zohara/.test(idx)){console.error('Zohara must not link out');process.exit(1)}
-for(const p of ['dist/work/armony/index.html','dist/es/work/armony/index.html','dist/pt/work/avgust/index.html','dist/work/enlace/index.html','dist/work/klicana/index.html']){ if(!fs.existsSync(p)){console.error('missing',p);process.exit(1)} }
-if(fs.existsSync('dist/work/siamo/index.html')){console.error('siamo must not have a case page');process.exit(1)}
+const cards=(idx.match(/data-kind=/g)||[]).length; if(cards!==seeded.length){console.error('expected',seeded.length,'cards, got',cards);process.exit(1)}
+if(seeded.some(p=>p.slug==='zohara')){ if(!/Temporarily offline/.test(idx)){console.error('Zohara parked label missing');process.exit(1)} if(/href=\"https:\/\/zohara/.test(idx)){console.error('Zohara must not link out');process.exit(1)} }
+for(const sl of withCase){ for(const l of ['','es/','pt/']){ const p='dist/'+l+'work/'+sl+'/index.html'; if(!fs.existsSync(p)){console.error('missing',p);process.exit(1)} } }
+for(const p of seeded.filter(p=>!p.caseStudy)){ if(fs.existsSync('dist/work/'+p.slug+'/index.html')){console.error(p.slug,'must not have a case page');process.exit(1)} }
 const es=fs.readFileSync('dist/es/work/index.html','utf8'); if(!es.includes('Ver sitio')){console.error('ES copy missing');process.exit(1)}
-console.log('work OK')"
+console.log('work OK —',seeded.length,'projects,',withCase.length,'case pages')"
 ```
 
-Expected: `work OK`
+Expected: `work OK — 8 projects, 2 case pages` today (`12 … 4` once the Upwork screenshots are seeded).
 
 - [ ] **Step 10: Commit**
 
@@ -1853,7 +1879,7 @@ git commit -m "feat(work): project grid with filter and case-study pages in en/e
 - Modify: `src/pages/index.astro` (replace the Task 2 temporary content)
 
 **Interfaces:**
-- Consumes: `getFeaturedProjects`, `getCaseStudySlugs`, `ProjectGrid`, `SectionHeading`, `personJsonLd`, `t`, `localizePath`. The contact section is a placeholder `<section id="contact">` that Task 9 fills with `ContactForm`.
+- Consumes: `getFeaturedProjects(locale)`, `getCaseStudySlugs`, `ProjectGrid`, `SectionHeading`, `personJsonLd`, `t`, `localizePath`. The contact section is a placeholder `<section id="contact">` that Task 9 fills with `ContactForm`.
 
 - [ ] **Step 1: Write `src/views/HomeView.astro`**
 
@@ -1868,7 +1894,7 @@ import { personJsonLd } from '../lib/seo';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
-const [featured, caseSlugs] = await Promise.all([getFeaturedProjects(), getCaseStudySlugs()]);
+const [featured, caseSlugs] = await Promise.all([getFeaturedProjects(locale), getCaseStudySlugs()]);
 const services = [
   ['wp', tr('services.wp.title'), tr('services.wp.desc')],
   ['apps', tr('services.apps.title'), tr('services.apps.desc')],
@@ -1876,7 +1902,7 @@ const services = [
 ] as const;
 const proofs = (['home.proof1', 'home.proof2', 'home.proof3'] as const).map((k) => [tr(`${k}.title`), tr(`${k}.text`)]);
 ---
-<Base {locale} title="Jose Uribe — Full-stack developer · WordPress replacement in Astro" description={tr('home.sub')} jsonLd={personJsonLd()}>
+<Base {locale} title={tr('home.metaTitle')} description={tr('home.sub')} jsonLd={personJsonLd()}>
   <section class="wrap py-20 md:py-32">
     <p class="eyebrow">{tr('home.eyebrow')}</p>
     <h1 class="mt-5 max-w-4xl text-display-xl leading-[1.02]">{tr('home.h1')}</h1>
@@ -1944,16 +1970,18 @@ import HomeView from '../views/HomeView.astro';
 ```bash
 npm run build && node -e "
 const fs=require('fs');
+const all=JSON.parse(fs.readFileSync('data/projects.json','utf8'));
+const want=Math.min(4, all.filter(p=>p.featured&&fs.existsSync('tmp/screenshots/'+p.slug+'.png')).length);
 for(const [f,h1] of [['dist/index.html','I build the site that replaces your WordPress.'],['dist/es/index.html','Construyo el sitio que reemplaza tu WordPress.'],['dist/pt/index.html','Eu construo o site que substitui o seu WordPress.']]){
   const s=fs.readFileSync(f,'utf8');
   if(!s.includes(h1)){console.error(f,'h1 missing');process.exit(1)}
-  const n=(s.match(/data-kind=/g)||[]).length; if(n!==4){console.error(f,'expected 4 featured, got',n);process.exit(1)}
+  const n=(s.match(/data-kind=/g)||[]).length; if(n!==want){console.error(f,'expected',want,'featured, got',n);process.exit(1)}
   if(!s.includes('\"@type\":\"Person\"')){console.error(f,'Person JSON-LD missing');process.exit(1)}
 }
-console.log('home OK')"
+console.log('home OK —',want,'featured')"
 ```
 
-Expected: `home OK`
+Expected: `home OK — 2 featured` today (`4` once Avgust and Klicana are seeded).
 
 - [ ] **Step 4: Commit**
 
@@ -2016,13 +2044,15 @@ const blocks = [
 ```astro
 ---
 import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import Base from '../layouts/Base.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import { t, type Locale } from '../i18n/ui';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
-const hasPhoto = existsSync(new URL('../../public/images/jose.jpg', import.meta.url));
+// process.cwd() is the project root during `astro build`; import.meta.url would point at the compiled chunk.
+const hasPhoto = existsSync(join(process.cwd(), 'public/images/jose.jpg'));
 const facts = [tr('about.fact.location'), tr('about.fact.timezone'), tr('about.fact.languages'), tr('about.fact.upwork')];
 ---
 <Base {locale} title={`${tr('about.title')} — Jose Uribe`} description={tr('about.p1')}>
@@ -2077,7 +2107,7 @@ git commit -m "feat(pages): services and about in en/es/pt"
 - Create: `src/components/PostCard.astro`, `src/views/BlogIndexView.astro`, `src/views/BlogPostView.astro`, `src/pages/blog/index.astro`, `src/pages/blog/[slug].astro`, `src/pages/es/blog/index.astro`, `src/pages/es/blog/[slug].astro`, `src/pages/pt/blog/index.astro`, `src/pages/pt/blog/[slug].astro`
 
 **Interfaces:**
-- Consumes: `getPosts`, `getPostBySlug`, `urlFor`, `renderPortableText`, `articleJsonLd`, `Post`, `PostTranslation`.
+- Consumes: `getPosts`, `getPostBySlug`, `urlFor`, `renderPortableText`, `articleJsonLd`, `Post`, `otherTranslations`.
 
 - [ ] **Step 1: Write `PostCard.astro`**
 
@@ -2128,7 +2158,7 @@ const posts = await getPosts(locale);
 ---
 import Base from '../layouts/Base.astro';
 import { t, localizePath, LANG_NAMES, type Locale } from '../i18n/ui';
-import type { Post } from '../lib/content';
+import { otherTranslations, type Post } from '../lib/content';
 import { urlFor } from '../lib/sanity';
 import { renderPortableText } from '../lib/portable-text';
 import { articleJsonLd } from '../lib/seo';
@@ -2136,9 +2166,9 @@ interface Props { locale: Locale; post: Post }
 const { locale, post } = Astro.props;
 const tr = t(locale);
 const html = await renderPortableText(post.body, { imageUrl: (b) => urlFor(b as any).width(1400).url() });
+const others = otherTranslations(post, locale);
 const alternates: Partial<Record<Locale, string>> = { [locale]: localizePath(`/blog/${post.slug}`, locale) };
-for (const tr_ of post.translations) alternates[tr_.language] = localizePath(`/blog/${tr_.slug}`, tr_.language);
-const others = post.translations;
+for (const o of others) alternates[o.language] = localizePath(`/blog/${o.slug}`, o.language);
 const date = new Date(post.publishedAt).toLocaleDateString(locale === 'pt' ? 'pt-BR' : locale, { year: 'numeric', month: 'long', day: 'numeric' });
 const og = post.cover ? urlFor(post.cover).width(1200).height(630).fit('crop').url() : undefined;
 ---
@@ -2151,7 +2181,7 @@ const og = post.cover ? urlFor(post.cover).width(1200).height(630).fit('crop').u
     {others.length > 0 && (
       <p class="mt-4 text-sm text-ink-soft">{tr('blog.alsoIn')} {others.map((o, i) => <><a href={alternates[o.language]} hreflang={o.language} class="underline">{LANG_NAMES[o.language]}</a>{i < others.length - 1 ? ', ' : ''}</>)}</p>
     )}
-    {post.cover && <img src={urlFor(post.cover).width(1400).url()} alt="" width="1400" loading="eager" decoding="async" class="mt-10 w-full rounded-xl" />}
+    {post.cover && <img src={urlFor(post.cover).width(1400).height(788).fit('crop').url()} alt="" width="1400" height="788" loading="eager" decoding="async" class="mt-10 w-full rounded-xl" />}
     <div class="prose-site mt-10" set:html={html} />
   </article>
 </Base>
@@ -2198,7 +2228,7 @@ Expected: `blog empty OK`
 
 - [ ] **Step 6: Manual acceptance — publish a real post**
 
-In `http://localhost:4321/admin` → *Posts · English* → create: title "Why I stopped selling WordPress maintenance", slug auto, language `en`, excerpt one sentence, body two paragraphs plus one code block (`language: bash`, `code: npm create astro@latest`), publishedAt now. **Publish.** Then:
+In `../studio-personal-site` run `npm run dev` → http://localhost:3333 → *Posts · English* → **New post (en)** (the language is pre-set by the template): title "Why I stopped selling WordPress maintenance", slug auto, excerpt one sentence, body two paragraphs plus one code block (`language: bash`, `code: npm create astro@latest`), publishedAt now. **Publish.** Optionally use the *Translations* menu in the document header to create the ES version and publish it too. Then:
 
 Run: `npm run build && ls dist/blog/ && grep -c "shiki" dist/blog/why-i-stopped-selling-wordpress-maintenance/index.html`
 Expected: the slug folder exists and the count is ≥ 1 (highlighted code block rendered).
@@ -2269,7 +2299,9 @@ Run: `npm test` — Expected: PASS
 import { track } from '../lib/analytics';
 
 document.addEventListener('click', (e) => {
-  const el = (e.target as HTMLElement).closest<HTMLElement>('[data-cta],[data-outbound],[data-book]');
+  // e.target can be a Text node (Safari) — resolve to the nearest Element first.
+  const origin = e.target instanceof Element ? e.target : (e.target as Node | null)?.parentElement;
+  const el = origin?.closest<HTMLElement>('[data-cta],[data-outbound],[data-book]');
   if (!el) return;
   if (el.dataset.cta) track('cta_click', { location: el.dataset.cta });
   if (el.dataset.outbound) track('project_outbound', { project: el.dataset.outbound });
@@ -2375,7 +2407,7 @@ git commit -m "feat(contact): Web3Forms contact form, GA4 event tracking, Cal.co
 
 ---
 
-### Task 10: SEO/ops — robots, admin noindex, OG image, Lighthouse gate, webhook
+### Task 10: SEO/ops — robots, security headers, OG image, Lighthouse gate, webhook, Studio deploy
 
 **Files:**
 - Create: `public/robots.txt`, `vercel.json`, `scripts/make-og.mjs`, `public/og-default.png` (generated)
@@ -2387,7 +2419,6 @@ git commit -m "feat(contact): Web3Forms contact form, GA4 event tracking, Cal.co
 
 ```
 User-agent: *
-Disallow: /admin
 Allow: /
 
 Sitemap: https://joseuribe.dev/sitemap-index.xml
@@ -2398,7 +2429,6 @@ Sitemap: https://joseuribe.dev/sitemap-index.xml
 ```json
 {
   "headers": [
-    { "source": "/admin(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
     { "source": "/(.*)", "headers": [
       { "key": "X-Content-Type-Options", "value": "nosniff" },
       { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
@@ -2445,7 +2475,7 @@ done
 kill $(cat tmp/preview.pid)
 ```
 
-Expected: both lines print a score ≥ 95. If below: the usual culprits are un-sized images (check every `<img>` has `width`/`height`), font loading (confirm `@fontsource-variable` files are `woff2` and only two families load), and the Studio bundle leaking into pages (it must only be referenced from `/admin`).
+Expected: both lines print a score ≥ 95. If below: the usual culprits are un-sized images (check every `<img>` has `width`/`height`), font loading (confirm `@fontsource-variable` files are `woff2` and only two families load), and third-party scripts loading eagerly (GA4 must stay `async`; nothing from Sanity ships to the browser).
 
 - [ ] **Step 4: Webhook — content publish rebuilds the site (Jose, in two dashboards)**
 
@@ -2461,7 +2491,11 @@ Document in `README.md` under **Despliegue**, replacing the "Pendiente" sentence
    - Trigger on: Create, Update, Delete
    - Filter: `_type in ["project", "post"]`
    - HTTP method: POST
-3. Publish any document in `/admin` and confirm a new deployment appears in Vercel within a minute.
+3. Publish any document in the Studio and confirm a new deployment appears in Vercel within a minute.
+
+### Avisos de build conocidos
+
+`npm run build` imprime dos avisos sobre prioridad de rutas (`/es` vs `/es/`, `/pt` vs `/pt/`). Son un caso límite benigno de Astro con `i18n.fallback` + `prefixDefaultLocale: false` en la ruta raíz: la página real gana sobre el fallback y la salida es correcta. No configurar `prerenderConflictBehavior: 'ignore'` — silenciaría colisiones reales.
 ```
 
 - [ ] **Step 5: Final smoke on production**
@@ -2469,19 +2503,19 @@ Document in `README.md` under **Despliegue**, replacing the "Pendiente" sentence
 After Vercel deploys `main`:
 
 ```bash
-for p in / /es/ /pt/ /work /work/armony /services /about /blog /admin /robots.txt /sitemap-index.xml /og-default.png; do
+for p in / /es/ /pt/ /work /work/armony /services /about /blog /robots.txt /sitemap-index.xml /og-default.png; do
   printf "%-22s %s\n" "$p" "$(curl -s -o /dev/null -w '%{http_code}' https://joseuribe.dev$p)"
 done
-curl -sI https://joseuribe.dev/admin | grep -i x-robots-tag
+curl -s -o /dev/null -w 'studio %{http_code}\n' https://joseuribe.sanity.studio/
 ```
 
-Expected: all `200`; the last line prints `x-robots-tag: noindex, nofollow`. Open `https://joseuribe.dev/admin`, log in, and confirm the Studio loads with the 12 projects.
+Expected: all `200`. Open `https://joseuribe.sanity.studio`, log in, and confirm the Studio loads with the 12 projects. (If the Studio is not deployed yet: `cd ../studio-personal-site && npm run deploy` after `npx sanity login`.)
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add public/robots.txt public/og-default.png vercel.json scripts/make-og.mjs README.md
-git commit -m "chore(ops): robots, security headers, admin noindex, OG image, Lighthouse gate, publish webhook docs"
+git commit -m "chore(ops): robots, security headers, OG image, Lighthouse gate, publish webhook docs"
 git push
 ```
 
@@ -2489,14 +2523,14 @@ git push
 
 ## Acceptance checklist (from the spec §9)
 
-- [ ] 12 projects published with screenshots; 4 case-study pages; Zohara without a link — Task 5 assertion.
-- [ ] A post published in `/admin` appears after rebuild without touching code — Task 8 Step 6 + Task 10 Step 4.
+- [ ] Every project with a screenshot is published (8 today, 12 once the Upwork PNGs are seeded); case-study pages for those with an English case study; Zohara without a link — Task 5 assertion.
+- [ ] A post published in the Studio appears after rebuild without touching code — Task 8 Step 6 + Task 10 Step 4.
 - [ ] Home, work, services, about, blog in EN and ES; PT fixed pages — Tasks 5–8 build all three locales.
 - [ ] Contact form delivers email and fires `contact_submit` — Task 9 Step 8 (manual send) + GA4 DebugView.
 - [ ] Lighthouse mobile ≥ 95 on `/` and a case page — Task 10 Step 3.
 - [ ] Valid `hreflang` on all three versions — Task 2 Step 9 assertion; blog alternates in Task 8.
-- [ ] `/admin` works in production with Sanity login — Task 10 Step 5.
+- [ ] The standalone Studio is deployed at joseuribe.sanity.studio and logs in — Task 10 Step 5.
 
 ## Deliberately not in this plan
 
-SSR/adapters, custom MCP, migration from overnatic.us, newsletter, comments, search, dark mode, the Overnatic sector demos. See spec §10.
+SSR/adapters, custom MCP, migration from overnatic.us, newsletter, comments, search, dark mode, the Overnatic sector demos, embedding the Studio in the app. See spec §10.

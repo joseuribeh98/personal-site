@@ -1,0 +1,31 @@
+---
+import { t, localizePath, type Locale } from '../i18n/ui';
+import type { Project } from '../lib/content';
+import { urlFor } from '../lib/sanity';
+interface Props { project: Project; locale: Locale; eager?: boolean; hasCase?: boolean }
+const { project: p, locale, eager = false, hasCase = false } = Astro.props;
+const tr = t(locale);
+const img = urlFor(p.screenshot).width(1200).height(750).fit('crop').url();
+const img2x = urlFor(p.screenshot).width(2400).height(1500).fit('crop').url();
+const kindLabel = { app: tr('work.filterApp'), site: tr('work.filterSite'), wordpress: tr('work.filterWp') }[p.kind];
+const caseHref = hasCase ? localizePath(`/work/${p.slug}`, locale) : null;
+const live = p.status === 'live' && p.url;
+// No destination → no anchor. An <a> without href is unfocusable and confusing to assistive tech.
+const Wrapper = caseHref || live ? 'a' : 'div';
+const alt = `${tr('work.screenshotOf')} ${p.title}`;
+---
+<article class="group flex flex-col gap-4" data-kind={p.kind}>
+  <Wrapper href={caseHref ?? (live ? p.url! : undefined)} target={caseHref ? undefined : live ? '_blank' : undefined} rel={caseHref ? undefined : live ? 'noopener' : undefined} class="block overflow-hidden rounded-xl border border-line bg-paper-pure shadow-sm" data-outbound={!caseHref && live ? p.slug : undefined}>
+    <img src={img} srcset={`${img} 1200w, ${img2x} 2400w`} sizes="(min-width: 768px) 50vw, 100vw" width="1200" height="750" alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" class="aspect-[8/5] w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]" />
+  </Wrapper>
+  <div>
+    <p class="eyebrow">{kindLabel}{p.year ? ` · ${p.year}` : ''}</p>
+    <h3 class="mt-1 text-xl">{p.title}</h3>
+    <p class="mt-2 text-ink-mut">{p.summary}</p>
+    <div class="mt-3 flex flex-wrap gap-4 text-sm">
+      {caseHref && <a href={caseHref} class="text-accent underline underline-offset-4">{tr('work.caseStudy')}</a>}
+      {live && <a href={p.url!} target="_blank" rel="noopener" class="text-ink-mut hover:text-ink" data-outbound={p.slug}>{tr('work.viewSite')} ↗</a>}
+      {p.status === 'parked' && <span class="text-ink-mut">{tr('work.parked')}</span>}
+    </div>
+  </div>
+</article>

@@ -1,0 +1,75 @@
+---
+import '../styles/global.css';
+import Analytics from '@vercel/analytics/astro';
+import { LOCALES, DEFAULT_LOCALE, LANG_TAGS, localizePath, stripLocale, t, type Locale } from '../i18n/ui';
+import { site } from '../config/site';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  alternates?: Partial<Record<Locale, string>>;
+  ogImage?: string;
+  noindex?: boolean;
+  jsonLd?: object | object[];
+  fallbackPath?: string;
+}
+const { locale, title, description, alternates, ogImage = '/og-default.png', noindex = false, jsonLd, fallbackPath } = Astro.props;
+
+const tr = t(locale);
+const { path } = stripLocale(Astro.url.pathname);
+const altHref = (l: Locale) => new URL(alternates?.[l] ?? localizePath(path, l), site.url).href;
+const canonical = altHref(locale);
+const ogLocale = { en: 'en_US', es: 'es_CO', pt: 'pt_BR' }[locale];
+const ga4 = site.ga4Id;
+---
+<!doctype html>
+<html lang={LANG_TAGS[locale]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {(alternates ? (Object.keys(alternates) as Locale[]) : LOCALES).map((l) => <link rel="alternate" hreflang={LANG_TAGS[l]} href={altHref(l)} />)}
+    {(!alternates || alternates.en) && <link rel="alternate" hreflang="x-default" href={altHref(DEFAULT_LOCALE)} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ogImage, site.url).href} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#f5f1e8" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    {ga4 && (
+      <>
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}></script>
+        <script is:inline define:vars={{ ga4 }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){ dataLayer.push(arguments); }
+          gtag('js', new Date());
+          gtag('config', ga4, { anonymize_ip: true });
+        </script>
+      </>
+    )}
+  </head>
+  <body class="min-h-dvh">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-ink focus:px-3 focus:py-2 focus:text-paper">{tr('nav.skip')}</a>
+    <Header {locale} {alternates} {fallbackPath} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer {locale} />
+    <Analytics />
+    <script>
+      import '../scripts/events.ts';
+    </script>
+  </body>
+</html>

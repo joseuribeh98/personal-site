@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import PostCard from '../components/PostCard.astro';
+import { t, type Locale } from '../i18n/ui';
+import { getPosts } from '../lib/sanity';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+const posts = await getPosts(locale);
+---
+<Base {locale} title={`${tr('blog.title')} — Jose Uribe`} description={tr('blog.lead')}>
+  <section class="wrap py-16 md:py-24">
+    <SectionHeading as="h1" title={tr('blog.title')} lead={tr('blog.lead')} />
+    <div class="mt-12 max-w-3xl">
+      {posts.length === 0 ? <p class="text-ink-mut" data-empty>{tr('blog.empty')}</p> : posts.map((post) => <PostCard {post} {locale} />)}
+    </div>
+  </section>
+</Base>

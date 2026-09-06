@@ -1,0 +1,67 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { t, localizePath, type Locale } from '../i18n/ui';
+import { getFeaturedProjects, getCaseStudySlugs } from '../lib/sanity';
+import { personJsonLd } from '../lib/seo';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+const [featured, caseSlugs] = await Promise.all([getFeaturedProjects(locale), getCaseStudySlugs()]);
+const services = [
+  ['wp', tr('services.wp.title'), tr('services.wp.desc')],
+  ['apps', tr('services.apps.title'), tr('services.apps.desc')],
+  ['care', tr('services.care.title'), tr('services.care.desc')],
+] as const;
+const proofs = (['home.proof1', 'home.proof2', 'home.proof3'] as const).map((k) => [tr(`${k}.title`), tr(`${k}.text`)]);
+---
+<Base {locale} title={tr('home.metaTitle')} description={tr('home.sub')} jsonLd={personJsonLd()}>
+  <section class="wrap py-20 md:py-32">
+    <p class="eyebrow">{tr('home.eyebrow')}</p>
+    <h1 class="mt-5 max-w-4xl text-display-xl leading-[1.02]">{tr('home.h1')}</h1>
+    <p class="mt-7 max-w-2xl text-xl text-ink-mut">{tr('home.sub')}</p>
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href={localizePath('/work', locale)} class="btn-primary" data-cta="hero-work">{tr('home.ctaPrimary')}</a>
+      <a href={localizePath('/#contact', locale)} class="btn-ghost" data-cta="hero-contact">{tr('home.ctaSecondary')}</a>
+    </div>
+  </section>
+
+  <section class="wrap py-16">
+    <div class="flex items-end justify-between gap-6">
+      <SectionHeading title={tr('home.featuredTitle')} />
+      <a href={localizePath('/work', locale)} class="text-sm text-accent underline underline-offset-4">{tr('home.featuredAll')} →</a>
+    </div>
+    <div class="mt-10"><ProjectGrid projects={featured} {locale} caseSlugs={caseSlugs} /></div>
+  </section>
+
+  <section class="wrap py-16">
+    <SectionHeading title={tr('home.servicesTitle')} />
+    <div class="mt-10 grid gap-8 md:grid-cols-3">
+      {services.map(([key, title, desc]) => (
+        <a href={localizePath(`/services#${key}`, locale)} class="rounded-xl border border-line bg-paper-pure p-6 transition hover:border-ink">
+          <h3 class="text-xl">{title}</h3>
+          <p class="mt-3 text-ink-mut">{desc}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap py-16">
+    <SectionHeading title={tr('home.proofTitle')} />
+    <dl class="mt-10 grid gap-10 md:grid-cols-3">
+      {proofs.map(([title, text]) => (
+        <div>
+          <dt class="text-lg font-medium">{title}</dt>
+          <dd class="mt-2 text-ink-mut">{text}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <section id="contact" class="wrap py-16 md:py-24">
+    <SectionHeading title={tr('home.ctaTitle')} lead={tr('home.ctaText')} />
+    <ContactForm {locale} />
+  </section>
+</Base>
