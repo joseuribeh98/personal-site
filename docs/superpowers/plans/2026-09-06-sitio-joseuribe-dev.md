@@ -2179,7 +2179,7 @@ const og = post.cover ? urlFor(post.cover).width(1200).height(630).fit('crop').u
     {others.length > 0 && (
       <p class="mt-4 text-sm text-ink-soft">{tr('blog.alsoIn')} {others.map((o, i) => <><a href={alternates[o.language]} hreflang={o.language} class="underline">{LANG_NAMES[o.language]}</a>{i < others.length - 1 ? ', ' : ''}</>)}</p>
     )}
-    {post.cover && <img src={urlFor(post.cover).width(1400).url()} alt="" width="1400" loading="eager" decoding="async" class="mt-10 w-full rounded-xl" />}
+    {post.cover && <img src={urlFor(post.cover).width(1400).height(788).fit('crop').url()} alt="" width="1400" height="788" loading="eager" decoding="async" class="mt-10 w-full rounded-xl" />}
     <div class="prose-site mt-10" set:html={html} />
   </article>
 </Base>
@@ -2471,7 +2471,7 @@ done
 kill $(cat tmp/preview.pid)
 ```
 
-Expected: both lines print a score ≥ 95. If below: the usual culprits are un-sized images (check every `<img>` has `width`/`height`), font loading (confirm `@fontsource-variable` files are `woff2` and only two families load), and the Studio bundle leaking into pages (it must only be referenced from `/admin`).
+Expected: both lines print a score ≥ 95. If below: the usual culprits are un-sized images (check every `<img>` has `width`/`height`), font loading (confirm `@fontsource-variable` files are `woff2` and only two families load), and third-party scripts loading eagerly (GA4 must stay `async`; nothing from Sanity ships to the browser).
 
 - [ ] **Step 4: Webhook — content publish rebuilds the site (Jose, in two dashboards)**
 
