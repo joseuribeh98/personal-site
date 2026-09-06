@@ -3,7 +3,6 @@ import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import sanity from '@sanity/astro';
-import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 
 const env = loadEnv(process.env.NODE_ENV ?? 'production', process.cwd(), '');
@@ -32,11 +31,9 @@ export default defineConfig({
       projectId: env.PUBLIC_SANITY_PROJECT_ID,
       dataset: env.PUBLIC_SANITY_DATASET ?? 'production',
       useCdn: false, // static build: fetch fresh content at build time
-      studioBasePath: '/admin', // hash-router by default on static output
+      // Studio is standalone in ../studio-personal-site — never embedded here
     }),
-    react(),
     sitemap({
-      filter: (page) => !page.includes('/admin'),
       i18n: {
         defaultLocale: 'en',
         locales: { en: 'en', es: 'es', pt: 'pt' },
