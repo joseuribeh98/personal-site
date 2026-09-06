@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import ProjectGrid from '../components/ProjectGrid.astro';
+import ContactForm from '../components/ContactForm.astro';
 import { t, localizePath, type Locale } from '../i18n/ui';
 import { getFeaturedProjects, getCaseStudySlugs } from '../lib/sanity';
 import { personJsonLd } from '../lib/seo';
@@ -61,6 +62,6 @@ const proofs = (['home.proof1', 'home.proof2', 'home.proof3'] as const).map((k) 
 
   <section id="contact" class="wrap py-16 md:py-24">
     <SectionHeading title={tr('home.ctaTitle')} lead={tr('home.ctaText')} />
-    <slot name="contact" />
+    <ContactForm {locale} />
   </section>
 </Base>
