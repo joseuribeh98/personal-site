@@ -1,12 +1,4 @@
 ---
-import Base from '../layouts/Base.astro';
-import { t } from '../i18n/ui';
-const tr = t('en');
+import HomeView from '../views/HomeView.astro';
 ---
-<Base locale="en" title="Jose Uribe — Full-stack developer" description={tr('home.sub')}>
-  <section class="wrap py-24">
-    <p class="eyebrow">{tr('home.eyebrow')}</p>
-    <h1 class="mt-4 max-w-4xl text-display-xl">{tr('home.h1')}</h1>
-    <p class="mt-6 max-w-2xl text-xl text-ink-mut">{tr('home.sub')}</p>
-  </section>
-</Base>
+<HomeView locale="en" />
