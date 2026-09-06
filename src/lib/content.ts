@@ -45,8 +45,11 @@ export function otherTranslations(post: Post, locale: Locale): PostTranslation[]
   return post.translations.filter((t) => t.language !== locale && t.slug !== null);
 }
 
-// Internationalized arrays (sanity-plugin-internationalized-array): [{ _key: locale, value }].
-const i18n = (field: string) => `coalesce(${field}[_key == $locale][0].value, ${field}[_key == "en"][0].value)`;
+// Internationalized arrays (sanity-plugin-internationalized-array).
+// Backwards compatible with v4 (language in `_key`) and v5 (dedicated `language` field),
+// so the site keeps rendering before, during and after the Studio's v4→v5 migration.
+const pick = (field: string, lang: string) => `${field}[language == ${lang} || _key == ${lang}][0].value`;
+const i18n = (field: string) => `coalesce(${pick(field, '$locale')}, ${pick(field, '"en"')})`;
 
 const PROJECT_FIELDS = `
   _id, title, "slug": slug.current, kind, client, role, year, stack, url, status,
@@ -58,7 +61,7 @@ const PROJECT_FIELDS = `
 export const PROJECTS_QUERY = `*[_type == "project" && !(_id in path("drafts.**")) && defined(screenshot)] | order(order asc) { ${PROJECT_FIELDS} }`;
 export const FEATURED_PROJECTS_QUERY = `*[_type == "project" && !(_id in path("drafts.**")) && defined(screenshot) && featured == true] | order(order asc) [0...4] { ${PROJECT_FIELDS} }`;
 export const PROJECT_BY_SLUG_QUERY = `*[_type == "project" && !(_id in path("drafts.**")) && slug.current == $slug][0] { ${PROJECT_FIELDS} }`;
-export const PROJECT_SLUGS_WITH_CASE_QUERY = `*[_type == "project" && !(_id in path("drafts.**")) && defined(screenshot) && count(caseStudy[_key == "en"][0].value) > 0].slug.current`;
+export const PROJECT_SLUGS_WITH_CASE_QUERY = `*[_type == "project" && !(_id in path("drafts.**")) && defined(screenshot) && count(caseStudy[language == "en" || _key == "en"][0].value) > 0].slug.current`;
 
 // Translations come from the @sanity/document-internationalization metadata document.
 // `value->slug.current` is null for translations that exist only as drafts.

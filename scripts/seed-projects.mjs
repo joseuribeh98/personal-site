@@ -20,9 +20,9 @@ const toBlocks = (paragraphs) =>
     children: [{ _type: 'span', _key: key(), text, marks: [] }],
   }));
 
-// sanity-plugin-internationalized-array shapes: [{ _key: locale, _type: 'internationalizedArray<Type>Value', value }]
-const i18nText = (obj) => Object.entries(obj).map(([lang, value]) => ({ _key: lang, _type: 'internationalizedArrayTextValue', value }));
-const i18nRich = (obj) => Object.entries(obj).map(([lang, paragraphs]) => ({ _key: lang, _type: 'internationalizedArrayRichTextValue', value: toBlocks(paragraphs) }));
+// sanity-plugin-internationalized-array v5 shapes: language in its own field, _key is a random stable key.
+const i18nText = (obj) => Object.entries(obj).map(([lang, value]) => ({ _key: key(), language: lang, _type: 'internationalizedArrayTextValue', value }));
+const i18nRich = (obj) => Object.entries(obj).map(([lang, paragraphs]) => ({ _key: key(), language: lang, _type: 'internationalizedArrayRichTextValue', value: toBlocks(paragraphs) }));
 
 let published = 0;
 for (const p of projects) {

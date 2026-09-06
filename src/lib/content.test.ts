@@ -22,7 +22,7 @@ describe('queries', () => {
   it('project query resolves localized summary with English fallback and orders by order', () => {
     expect(PROJECTS_QUERY).toContain('"slug": slug.current');
     expect(PROJECTS_QUERY).toContain('order(order asc)');
-    expect(PROJECTS_QUERY).toContain('coalesce(summary[_key == $locale][0].value, summary[_key == "en"][0].value)');
+    expect(PROJECTS_QUERY).toContain('coalesce(summary[language == $locale || _key == $locale][0].value, summary[language == "en" || _key == "en"][0].value)');
   });
   it('posts query filters by language, excludes drafts, and resolves translations via metadata', () => {
     expect(POSTS_QUERY).toContain('language == $locale');
