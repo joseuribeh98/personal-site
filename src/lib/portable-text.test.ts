@@ -27,4 +27,14 @@ describe('renderPortableText', () => {
     expect(html).toContain('alt="A chart"');
     expect(html).toContain('loading="lazy"');
   });
+
+  it('escapes quotes and ampersands in alt text and image urls (attribute context)', async () => {
+    const html = await renderPortableText(
+      [{ _type: 'image', _key: 'i', alt: 'She said "hi" & left', asset: { _ref: 'image-abc123-800x600-png' } }],
+      { imageUrl: () => 'https://cdn.example/a.png?w=1&h=2' },
+    );
+    expect(html).toContain('alt="She said &quot;hi&quot; &amp; left"');
+    expect(html).toContain('src="https://cdn.example/a.png?w=1&amp;h=2"');
+    expect(html).not.toContain('"hi"');
+  });
 });

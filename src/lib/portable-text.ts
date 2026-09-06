@@ -23,7 +23,9 @@ function defaultImageUrl(block: ImageBlock): string {
   return `/_sanity-image-missing/${block.asset._ref}`;
 }
 
-const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// Attribute-safe escaper: encodes &, <, >, and both quote characters.
+const escape = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 export async function renderPortableText(blocks: unknown[], opts: RenderOptions = {}): Promise<string> {
   const highlight = opts.highlight ?? defaultHighlight;
@@ -45,7 +47,7 @@ export async function renderPortableText(blocks: unknown[], opts: RenderOptions 
       html: ({ value }) => (value as { html: string }).html,
       image: ({ value }) => {
         const v = value as ImageBlock;
-        return `<img src="${imageUrl(v)}" alt="${escape(v.alt ?? '')}" loading="lazy" decoding="async" />`;
+        return `<img src="${escape(imageUrl(v))}" alt="${escape(v.alt ?? '')}" loading="lazy" decoding="async" />`;
       },
     },
   };
