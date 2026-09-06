@@ -183,6 +183,8 @@ const en = {
   'nav.contact': 'Contact',
   'nav.menu': 'Menu',
   'nav.lang': 'Language',
+  'nav.skip': 'Skip to content',
+  'nav.primary': 'Primary',
 
   'footer.built': 'Built with Astro and Sanity — the same stack I sell.',
   'footer.location': 'Cali, Colombia · US Eastern hours',
@@ -279,6 +281,8 @@ const es: Record<UiKey, string> = {
   'nav.contact': 'Contacto',
   'nav.menu': 'Menú',
   'nav.lang': 'Idioma',
+  'nav.skip': 'Saltar al contenido',
+  'nav.primary': 'Principal',
 
   'footer.built': 'Hecho con Astro y Sanity — el mismo stack que vendo.',
   'footer.location': 'Cali, Colombia · horario de la costa este de EE.UU.',
@@ -373,6 +377,8 @@ const pt: Record<UiKey, string> = {
   'nav.contact': 'Contato',
   'nav.menu': 'Menu',
   'nav.lang': 'Idioma',
+  'nav.skip': 'Pular para o conteúdo',
+  'nav.primary': 'Principal',
 
   'footer.built': 'Feito com Astro e Sanity — a mesma stack que eu vendo.',
   'footer.location': 'Cali, Colômbia · horário da costa leste dos EUA',
@@ -652,7 +658,7 @@ const isActive = (href: string) => current === localizePath(href, locale) || cur
 ---
 <header class="wrap flex items-center justify-between py-6">
   <a href={localizePath('/', locale)} class="font-display text-xl tracking-tight">Jose Uribe</a>
-  <nav aria-label="Primary" class="hidden items-center gap-7 text-sm md:flex">
+  <nav aria-label={tr('nav.primary')} class="hidden items-center gap-7 text-sm md:flex">
     {items.map(([href, label]) => (
       <a href={localizePath(href, locale)} class:list={['hover:text-ink', isActive(href) ? 'text-ink font-medium' : 'text-ink-mut']} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>
     ))}
@@ -661,7 +667,7 @@ const isActive = (href: string) => current === localizePath(href, locale) || cur
   </nav>
   <details class="md:hidden">
     <summary class="btn-ghost cursor-pointer list-none py-2!">{tr('nav.menu')}</summary>
-    <nav aria-label="Primary" class="absolute inset-x-0 z-20 mt-3 flex flex-col gap-1 border-y border-line bg-paper px-5 py-4 text-base">
+    <nav aria-label={tr('nav.primary')} class="absolute inset-x-0 z-20 mt-3 flex flex-col gap-1 border-y border-line bg-paper px-5 py-4 text-base">
       {items.map(([href, label]) => (
         <a href={localizePath(href, locale)} class="py-2">{label}</a>
       ))}
@@ -723,7 +729,7 @@ const { eyebrow, title, lead, as: Tag = 'h2' } = Astro.props;
 ---
 import '../styles/global.css';
 import Analytics from '@vercel/analytics/astro';
-import { LOCALES, DEFAULT_LOCALE, localizePath, stripLocale, type Locale } from '../i18n/ui';
+import { LOCALES, DEFAULT_LOCALE, localizePath, stripLocale, t, type Locale } from '../i18n/ui';
 import { site } from '../config/site';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -744,6 +750,7 @@ const altHref = (l: Locale) => new URL(alternates?.[l] ?? localizePath(path, l),
 const canonical = altHref(locale);
 const ogLocale = { en: 'en_US', es: 'es_CO', pt: 'pt_BR' }[locale];
 const ga4 = site.ga4Id;
+const tr = t(locale);
 ---
 <!doctype html>
 <html lang={locale === 'pt' ? 'pt-BR' : locale}>
@@ -781,7 +788,7 @@ const ga4 = site.ga4Id;
     )}
   </head>
   <body class="min-h-dvh">
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-ink focus:px-3 focus:py-2 focus:text-paper">Skip to content</a>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-ink focus:px-3 focus:py-2 focus:text-paper">{tr('nav.skip')}</a>
     <Header {locale} {alternates} />
     <main id="main">
       <slot />
