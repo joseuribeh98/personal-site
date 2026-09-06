@@ -2,6 +2,8 @@ export type Locale = 'en' | 'es' | 'pt';
 export const LOCALES = ['en', 'es', 'pt'] as const satisfies readonly Locale[];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const LANG_NAMES: Record<Locale, string> = { en: 'English', es: 'Español', pt: 'Português' };
+/** BCP-47 tags for hreflang / lang attributes and date formatting. */
+export const LANG_TAGS: Record<Locale, string> = { en: 'en', es: 'es', pt: 'pt-BR' };
 
 const en = {
   'nav.work': 'Work',
@@ -38,7 +40,7 @@ const en = {
   'home.ctaText': "Two paragraphs are enough. I'll reply within one business day with an honest read — including if you don't need me.",
 
   'work.title': 'Work',
-  'work.lead': 'Twelve projects. Seven are live right now — open them. The rest are shown as they shipped.',
+  'work.lead': 'Sites and web apps for clients in Colombia, Ecuador, Brazil and the US. Most are live — open them; the rest are shown as they shipped.',
   'work.filterAll': 'All',
   'work.filterApp': 'Web apps',
   'work.filterSite': 'Astro sites',
@@ -52,6 +54,7 @@ const en = {
   'work.year': 'Year',
   'work.back': 'All work',
   'work.screenshotOf': 'Screenshot of',
+  'work.filterLabel': 'Filter by type',
 
   'services.title': 'Services',
   'services.lead': 'Fixed scope, fixed price, paid once. No monthly plan to get started.',
@@ -138,7 +141,7 @@ const es: Record<UiKey, string> = {
   'home.ctaText': 'Con dos párrafos basta. Respondo en un día hábil con una lectura honesta — incluso si no me necesitas.',
 
   'work.title': 'Trabajo',
-  'work.lead': 'Doce proyectos. Siete están vivos ahora mismo — ábrelos. El resto se muestran tal como se entregaron.',
+  'work.lead': 'Sitios y aplicaciones web para clientes en Colombia, Ecuador, Brasil y Estados Unidos. La mayoría están vivos — ábrelos; el resto se muestran tal como se entregaron.',
   'work.filterAll': 'Todos',
   'work.filterApp': 'Aplicaciones',
   'work.filterSite': 'Sitios en Astro',
@@ -152,6 +155,7 @@ const es: Record<UiKey, string> = {
   'work.year': 'Año',
   'work.back': 'Todo el trabajo',
   'work.screenshotOf': 'Captura de',
+  'work.filterLabel': 'Filtrar por tipo',
 
   'services.title': 'Servicios',
   'services.lead': 'Alcance cerrado, precio fijo, pago único. Sin mensualidad para empezar.',
@@ -236,7 +240,7 @@ const pt: Record<UiKey, string> = {
   'home.ctaText': 'Dois parágrafos bastam. Respondo em um dia útil com uma leitura honesta — inclusive se você não precisar de mim.',
 
   'work.title': 'Trabalho',
-  'work.lead': 'Doze projetos. Sete estão no ar agora — abra. Os demais aparecem como foram entregues.',
+  'work.lead': 'Sites e aplicações web para clientes na Colômbia, no Equador, no Brasil e nos EUA. A maioria está no ar — abra; os demais aparecem como foram entregues.',
   'work.filterAll': 'Todos',
   'work.filterApp': 'Aplicações',
   'work.filterSite': 'Sites em Astro',
@@ -250,6 +254,7 @@ const pt: Record<UiKey, string> = {
   'work.year': 'Ano',
   'work.back': 'Todo o trabalho',
   'work.screenshotOf': 'Captura de',
+  'work.filterLabel': 'Filtrar por tipo',
 
   'services.title': 'Serviços',
   'services.lead': 'Escopo fechado, preço fixo, pagamento único. Sem mensalidade para começar.',

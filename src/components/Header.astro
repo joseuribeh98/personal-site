@@ -1,8 +1,8 @@
 ---
 import { t, localizePath, type Locale } from '../i18n/ui';
 import LangSwitch from './LangSwitch.astro';
-interface Props { locale: Locale; alternates?: Partial<Record<Locale, string>> }
-const { locale, alternates } = Astro.props;
+interface Props { locale: Locale; alternates?: Partial<Record<Locale, string>>; fallbackPath?: string }
+const { locale, alternates, fallbackPath } = Astro.props;
 const tr = t(locale);
 const items = [
   ['/work', tr('nav.work')],
@@ -20,7 +20,7 @@ const isActive = (href: string) => current === localizePath(href, locale) || cur
       <a href={localizePath(href, locale)} class:list={['hover:text-ink', isActive(href) ? 'text-ink font-medium' : 'text-ink-mut']} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>
     ))}
     <a href={localizePath('/#contact', locale)} class="btn-primary py-2!">{tr('nav.contact')}</a>
-    <LangSwitch {locale} {alternates} />
+    <LangSwitch {locale} {alternates} {fallbackPath} />
   </nav>
   <details class="md:hidden">
     <summary class="btn-ghost cursor-pointer list-none py-2!">{tr('nav.menu')}</summary>
@@ -29,7 +29,7 @@ const isActive = (href: string) => current === localizePath(href, locale) || cur
         <a href={localizePath(href, locale)} class="py-2">{label}</a>
       ))}
       <a href={localizePath('/#contact', locale)} class="py-2 text-accent">{tr('nav.contact')}</a>
-      <div class="pt-3"><LangSwitch {locale} {alternates} /></div>
+      <div class="pt-3"><LangSwitch {locale} {alternates} {fallbackPath} /></div>
     </nav>
   </details>
 </header>

@@ -8,7 +8,7 @@ const tr = t(locale);
 const filters = [['all', tr('work.filterAll')], ['app', tr('work.filterApp')], ['site', tr('work.filterSite')], ['wordpress', tr('work.filterWp')]] as const;
 ---
 {filter && (
-  <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label={tr('work.title')} data-filters>
+  <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label={tr('work.filterLabel')} data-filters>
     {filters.map(([k, label], i) => (
       <button type="button" data-filter={k} aria-pressed={i === 0 ? 'true' : 'false'} class="btn-ghost py-2! text-sm aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-paper">{label}</button>
     ))}

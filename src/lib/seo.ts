@@ -1,5 +1,5 @@
 import { site } from '../config/site';
-import { localizePath, type Locale } from '../i18n/ui';
+import { localizePath, LANG_TAGS, type Locale } from '../i18n/ui';
 import type { Project, Post } from './content';
 
 const abs = (path: string, locale: Locale) => new URL(localizePath(path, locale), site.url).href;
@@ -37,7 +37,7 @@ export function articleJsonLd(post: Post, locale: Locale) {
     headline: post.title,
     description: post.excerpt,
     datePublished: post.publishedAt,
-    inLanguage: locale === 'pt' ? 'pt-BR' : locale,
+    inLanguage: LANG_TAGS[locale],
     mainEntityOfPage: abs(`/blog/${post.slug}`, locale),
     author: { '@type': 'Person', name: site.name, url: site.url },
   };

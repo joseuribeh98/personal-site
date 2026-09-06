@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import Base from '../layouts/Base.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import { t, type Locale } from '../i18n/ui';
+import { personJsonLd } from '../lib/seo';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
@@ -11,7 +12,7 @@ const tr = t(locale);
 const hasPhoto = existsSync(join(process.cwd(), 'public/images/jose.jpg'));
 const facts = [tr('about.fact.location'), tr('about.fact.timezone'), tr('about.fact.languages'), tr('about.fact.upwork')];
 ---
-<Base {locale} title={`${tr('about.title')} — Jose Uribe`} description={tr('about.p1')}>
+<Base {locale} title={`${tr('about.title')} — Jose Uribe`} description={tr('about.p1')} jsonLd={personJsonLd()}>
   <section class="wrap grid gap-12 py-16 md:grid-cols-[2fr_1fr] md:py-24">
     <div>
       <SectionHeading as="h1" title={tr('about.title')} />

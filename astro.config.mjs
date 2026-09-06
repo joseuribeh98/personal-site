@@ -36,7 +36,7 @@ export default defineConfig({
     sitemap({
       i18n: {
         defaultLocale: 'en',
-        locales: { en: 'en', es: 'es', pt: 'pt' },
+        locales: { en: 'en', es: 'es', pt: 'pt-BR' },
       },
     }),
   ],

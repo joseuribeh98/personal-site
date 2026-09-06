@@ -1,10 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { t, localizePath, stripLocale, LOCALES, DEFAULT_LOCALE } from './ui';
+import { t, localizePath, stripLocale, LOCALES, DEFAULT_LOCALE, LANG_TAGS } from './ui';
 
 describe('i18n core', () => {
   it('exposes the three locales with en as default', () => {
     expect(LOCALES).toEqual(['en', 'es', 'pt']);
     expect(DEFAULT_LOCALE).toBe('en');
+  });
+
+  it('LANG_TAGS uses BCP-47 pt-BR for Portuguese', () => {
+    expect(LANG_TAGS).toEqual({ en: 'en', es: 'es', pt: 'pt-BR' });
   });
 
   it('t() returns the localized string and falls back to English', () => {

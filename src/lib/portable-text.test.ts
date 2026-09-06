@@ -26,6 +26,16 @@ describe('renderPortableText', () => {
     expect(html).toContain('src="https://cdn.example/abc.png"');
     expect(html).toContain('alt="A chart"');
     expect(html).toContain('loading="lazy"');
+    expect(html).toContain('width="1400"');
+    expect(html).toContain('height="1050"');
+  });
+
+  it('omits width/height when the asset ref has no encoded dimensions', async () => {
+    const html = await renderPortableText(
+      [{ _type: 'image', _key: 'i', alt: 'A chart', asset: { _ref: 'image-abc123-png' } }],
+      { imageUrl: () => 'https://cdn.example/abc.png' },
+    );
+    expect(html).not.toContain('width=');
   });
 
   it('escapes quotes and ampersands in alt text and image urls (attribute context)', async () => {

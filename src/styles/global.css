@@ -9,7 +9,7 @@
   --color-ink: #1b1713;
   --color-ink-2: #2a241d;
   --color-ink-mut: #5f574c;
-  --color-ink-soft: #8c8476;
+  --color-ink-soft: #8c8476; /* decorative only — fails AA on body text */
   --color-accent: #b5482a;
   --color-accent-hover: #963a21;
   --color-accent-soft: #f1d9cf;

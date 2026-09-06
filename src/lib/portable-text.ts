@@ -27,6 +27,14 @@ function defaultImageUrl(block: ImageBlock): string {
 const escape = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
+// Sanity asset refs encode intrinsic dimensions: image-<id>-<w>x<h>-<ext>.
+// We render at a fixed 1400px width and derive height from the source aspect ratio
+// so the browser can reserve layout space (prevents CLS) without a network round-trip.
+const dims = (ref: string): { width: number; height: number } | null => {
+  const m = /-(\d+)x(\d+)-/.exec(ref);
+  return m ? { width: 1400, height: Math.round((1400 * Number(m[2])) / Number(m[1])) } : null;
+};
+
 export async function renderPortableText(blocks: unknown[], opts: RenderOptions = {}): Promise<string> {
   const highlight = opts.highlight ?? defaultHighlight;
   const imageUrl = opts.imageUrl ?? defaultImageUrl;
@@ -47,7 +55,9 @@ export async function renderPortableText(blocks: unknown[], opts: RenderOptions 
       html: ({ value }) => (value as { html: string }).html,
       image: ({ value }) => {
         const v = value as ImageBlock;
-        return `<img src="${escape(imageUrl(v))}" alt="${escape(v.alt ?? '')}" loading="lazy" decoding="async" />`;
+        const d = dims(v.asset._ref);
+        const size = d ? ` width="${d.width}" height="${d.height}"` : '';
+        return `<img src="${escape(imageUrl(v))}" alt="${escape(v.alt ?? '')}"${size} loading="lazy" decoding="async" />`;
       },
     },
   };

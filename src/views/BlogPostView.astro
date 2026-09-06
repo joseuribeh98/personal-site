@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { t, localizePath, LANG_NAMES, type Locale } from '../i18n/ui';
+import { t, localizePath, LANG_NAMES, LANG_TAGS, type Locale } from '../i18n/ui';
 import { otherTranslations, type Post } from '../lib/content';
 import { urlFor } from '../lib/sanity';
 import { renderPortableText } from '../lib/portable-text';
@@ -12,17 +12,17 @@ const html = await renderPortableText(post.body, { imageUrl: (b) => urlFor(b as 
 const others = otherTranslations(post, locale);
 const alternates: Partial<Record<Locale, string>> = { [locale]: localizePath(`/blog/${post.slug}`, locale) };
 for (const o of others) alternates[o.language] = localizePath(`/blog/${o.slug}`, o.language);
-const date = new Date(post.publishedAt).toLocaleDateString(locale === 'pt' ? 'pt-BR' : locale, { year: 'numeric', month: 'long', day: 'numeric' });
+const date = new Date(post.publishedAt).toLocaleDateString(LANG_TAGS[locale], { year: 'numeric', month: 'long', day: 'numeric' });
 const og = post.cover ? urlFor(post.cover).width(1200).height(630).fit('crop').url() : undefined;
 ---
-<Base {locale} title={`${post.title} — Jose Uribe`} description={post.excerpt} {alternates} ogImage={og} jsonLd={articleJsonLd(post, locale)}>
+<Base {locale} title={`${post.title} — Jose Uribe`} description={post.excerpt} {alternates} ogImage={og} jsonLd={articleJsonLd(post, locale)} fallbackPath="/blog">
   <article class="wrap max-w-3xl py-16 md:py-24">
     <a href={localizePath('/blog', locale)} class="text-sm text-ink-mut hover:text-ink">← {tr('blog.back')}</a>
     <p class="eyebrow mt-8">{date}</p>
     <h1 class="mt-3 text-display-lg">{post.title}</h1>
     <p class="mt-4 text-xl text-ink-mut">{post.excerpt}</p>
     {others.length > 0 && (
-      <p class="mt-4 text-sm text-ink-soft">{tr('blog.alsoIn')} {others.map((o, i) => <><a href={alternates[o.language]} hreflang={o.language} class="underline">{LANG_NAMES[o.language]}</a>{i < others.length - 1 ? ', ' : ''}</>)}</p>
+      <p class="mt-4 text-sm text-ink-mut">{tr('blog.alsoIn')} {others.map((o, i) => <><a href={alternates[o.language]} hreflang={LANG_TAGS[o.language]} class="underline">{LANG_NAMES[o.language]}</a>{i < others.length - 1 ? ', ' : ''}</>)}</p>
     )}
     {post.cover && <img src={urlFor(post.cover).width(1400).height(788).fit('crop').url()} alt="" width="1400" height="788" loading="eager" decoding="async" class="mt-10 w-full rounded-xl" />}
     <div class="prose-site mt-10" set:html={html} />

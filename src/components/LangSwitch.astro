@@ -1,9 +1,10 @@
 ---
-import { LOCALES, LANG_NAMES, localizePath, stripLocale, t, type Locale } from '../i18n/ui';
-interface Props { locale: Locale; alternates?: Partial<Record<Locale, string>> }
-const { locale, alternates = {} } = Astro.props;
+import { LOCALES, LANG_NAMES, LANG_TAGS, localizePath, stripLocale, t, type Locale } from '../i18n/ui';
+interface Props { locale: Locale; alternates?: Partial<Record<Locale, string>>; fallbackPath?: string }
+const { locale, alternates, fallbackPath } = Astro.props;
 const { path } = stripLocale(Astro.url.pathname);
-const hrefFor = (l: Locale) => alternates[l] ?? localizePath(path, l);
+// When a page declares its alternates (posts), locales without one go to fallbackPath (the blog index), never to a guessed URL.
+const hrefFor = (l: Locale) => alternates?.[l] ?? (alternates && fallbackPath ? localizePath(fallbackPath, l) : localizePath(path, l));
 ---
 <nav aria-label={t(locale)('nav.lang')} class="flex items-center gap-1 text-xs">
   {LOCALES.map((l, i) => (
@@ -11,7 +12,7 @@ const hrefFor = (l: Locale) => alternates[l] ?? localizePath(path, l);
       {i > 0 && <span class="text-ink-soft" aria-hidden="true">·</span>}
       <a
         href={hrefFor(l)}
-        hreflang={l}
+        hreflang={LANG_TAGS[l]}
         aria-current={l === locale ? 'true' : undefined}
         class:list={['rounded px-1.5 py-1 uppercase tracking-wider', l === locale ? 'text-ink font-semibold' : 'text-ink-mut hover:text-ink']}
         title={LANG_NAMES[l]}

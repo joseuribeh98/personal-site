@@ -1,10 +1,10 @@
 ---
-import { t, localizePath, type Locale } from '../i18n/ui';
+import { t, localizePath, LANG_TAGS, type Locale } from '../i18n/ui';
 import type { Post } from '../lib/content';
 interface Props { post: Post; locale: Locale }
 const { post, locale } = Astro.props;
 const tr = t(locale);
-const date = new Date(post.publishedAt).toLocaleDateString(locale === 'pt' ? 'pt-BR' : locale, { year: 'numeric', month: 'long', day: 'numeric' });
+const date = new Date(post.publishedAt).toLocaleDateString(LANG_TAGS[locale], { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 <article class="border-t border-line py-8">
   <p class="eyebrow">{date}</p>
