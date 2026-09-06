@@ -190,6 +190,7 @@ const en = {
   'footer.location': 'Cali, Colombia · US Eastern hours',
   'footer.rights': 'All rights reserved.',
 
+  'home.metaTitle': 'Jose Uribe — Full-stack developer · WordPress replacement in Astro',
   'home.eyebrow': 'Full-stack developer · Cali, Colombia',
   'home.h1': 'I build the site that replaces your WordPress.',
   'home.sub': 'Fast, secure, and editable without fear of breaking it. Astro plus a modern CMS, built by one developer you actually talk to — on US Eastern hours.',
@@ -289,6 +290,7 @@ const es: Record<UiKey, string> = {
   'footer.location': 'Cali, Colombia · horario de la costa este de EE.UU.',
   'footer.rights': 'Todos los derechos reservados.',
 
+  'home.metaTitle': 'Jose Uribe — Desarrollador full-stack · Reemplazo de WordPress en Astro',
   'home.eyebrow': 'Desarrollador full-stack · Cali, Colombia',
   'home.h1': 'Construyo el sitio que reemplaza tu WordPress.',
   'home.sub': 'Rápido, seguro y editable sin miedo a romperlo. Astro con un CMS moderno, hecho por un desarrollador con el que hablas de verdad.',
@@ -386,6 +388,7 @@ const pt: Record<UiKey, string> = {
   'footer.location': 'Cali, Colômbia · horário da costa leste dos EUA',
   'footer.rights': 'Todos os direitos reservados.',
 
+  'home.metaTitle': 'Jose Uribe — Desenvolvedor full-stack · Substituição do WordPress em Astro',
   'home.eyebrow': 'Desenvolvedor full-stack · Cali, Colômbia',
   'home.h1': 'Eu construo o site que substitui o seu WordPress.',
   'home.sub': 'Rápido, seguro e editável sem medo de quebrar. Astro com um CMS moderno, feito por um desenvolvedor com quem você fala de verdade.',
@@ -1899,7 +1902,7 @@ const services = [
 ] as const;
 const proofs = (['home.proof1', 'home.proof2', 'home.proof3'] as const).map((k) => [tr(`${k}.title`), tr(`${k}.text`)]);
 ---
-<Base {locale} title="Jose Uribe — Full-stack developer · WordPress replacement in Astro" description={tr('home.sub')} jsonLd={personJsonLd()}>
+<Base {locale} title={tr('home.metaTitle')} description={tr('home.sub')} jsonLd={personJsonLd()}>
   <section class="wrap py-20 md:py-32">
     <p class="eyebrow">{tr('home.eyebrow')}</p>
     <h1 class="mt-5 max-w-4xl text-display-xl leading-[1.02]">{tr('home.h1')}</h1>
