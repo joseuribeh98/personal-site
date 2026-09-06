@@ -50,6 +50,7 @@ const en = {
   'work.role': 'Role',
   'work.year': 'Year',
   'work.back': 'All work',
+  'work.screenshotOf': 'Screenshot of',
 
   'services.title': 'Services',
   'services.lead': 'Fixed scope, fixed price, paid once. No monthly plan to get started.',
@@ -148,6 +149,7 @@ const es: Record<UiKey, string> = {
   'work.role': 'Rol',
   'work.year': 'Año',
   'work.back': 'Todo el trabajo',
+  'work.screenshotOf': 'Captura de',
 
   'services.title': 'Servicios',
   'services.lead': 'Alcance cerrado, precio fijo, pago único. Sin mensualidad para empezar.',
@@ -244,6 +246,7 @@ const pt: Record<UiKey, string> = {
   'work.role': 'Papel',
   'work.year': 'Ano',
   'work.back': 'Todo o trabalho',
+  'work.screenshotOf': 'Captura de',
 
   'services.title': 'Serviços',
   'services.lead': 'Escopo fechado, preço fixo, pagamento único. Sem mensalidade para começar.',
