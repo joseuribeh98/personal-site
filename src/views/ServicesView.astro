@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { t, localizePath, type Locale } from '../i18n/ui';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+const blocks = [
+  { id: 'wp', title: tr('services.wp.title'), desc: tr('services.wp.desc'), bullets: [tr('services.wp.b1'), tr('services.wp.b2'), tr('services.wp.b3')] },
+  { id: 'apps', title: tr('services.apps.title'), desc: tr('services.apps.desc'), bullets: [tr('services.apps.b1'), tr('services.apps.b2'), tr('services.apps.b3')] },
+  { id: 'care', title: tr('services.care.title'), desc: tr('services.care.desc'), bullets: [] },
+];
+---
+<Base {locale} title={`${tr('services.title')} — Jose Uribe`} description={tr('services.lead')}>
+  <section class="wrap py-16 md:py-24">
+    <SectionHeading as="h1" title={tr('services.title')} lead={tr('services.lead')} />
+    <div class="mt-14 grid gap-14">
+      {blocks.map((b, i) => (
+        <section id={b.id} class="grid gap-6 border-t border-line pt-10 md:grid-cols-[1fr_2fr]">
+          <div>
+            <p class="eyebrow">0{i + 1}</p>
+            <h2 class="mt-2 text-display-md">{b.title}</h2>
+          </div>
+          <div>
+            <p class="text-lg text-ink-2">{b.desc}</p>
+            {b.bullets.length > 0 && (
+              <ul class="mt-6 grid gap-3 text-ink-mut">
+                {b.bullets.map((x) => <li class="flex gap-3"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"></span><span>{x}</span></li>)}
+              </ul>
+            )}
+          </div>
+        </section>
+      ))}
+    </div>
+    <p class="mt-16"><a href={localizePath('/#contact', locale)} class="btn-primary" data-cta="services-contact">{tr('services.cta')}</a></p>
+  </section>
+</Base>
