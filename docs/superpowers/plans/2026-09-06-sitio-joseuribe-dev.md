@@ -222,6 +222,7 @@ const en = {
   'work.role': 'Role',
   'work.year': 'Year',
   'work.back': 'All work',
+  'work.screenshotOf': 'Screenshot of',
 
   'services.title': 'Services',
   'services.lead': 'Fixed scope, fixed price, paid once. No monthly plan to get started.',
@@ -320,6 +321,7 @@ const es: Record<UiKey, string> = {
   'work.role': 'Rol',
   'work.year': 'Año',
   'work.back': 'Todo el trabajo',
+  'work.screenshotOf': 'Captura de',
 
   'services.title': 'Servicios',
   'services.lead': 'Alcance cerrado, precio fijo, pago único. Sin mensualidad para empezar.',
@@ -416,6 +418,7 @@ const pt: Record<UiKey, string> = {
   'work.role': 'Papel',
   'work.year': 'Ano',
   'work.back': 'Todo o trabalho',
+  'work.screenshotOf': 'Captura de',
 
   'services.title': 'Serviços',
   'services.lead': 'Escopo fechado, preço fixo, pagamento único. Sem mensalidade para começar.',
@@ -1689,11 +1692,14 @@ const img2x = urlFor(p.screenshot).width(2400).height(1500).fit('crop').url();
 const kindLabel = { app: tr('work.filterApp'), site: tr('work.filterSite'), wordpress: tr('work.filterWp') }[p.kind];
 const caseHref = hasCase ? localizePath(`/work/${p.slug}`, locale) : null;
 const live = p.status === 'live' && p.url;
+// No destination → no anchor. An <a> without href is unfocusable and confusing to assistive tech.
+const Wrapper = caseHref || live ? 'a' : 'div';
+const alt = `${tr('work.screenshotOf')} ${p.title}`;
 ---
 <article class="group flex flex-col gap-4" data-kind={p.kind}>
-  <a href={caseHref ?? (live ? p.url! : undefined)} target={caseHref ? undefined : live ? '_blank' : undefined} rel={caseHref ? undefined : 'noopener'} class="block overflow-hidden rounded-xl border border-line bg-paper-pure shadow-sm" data-outbound={!caseHref && live ? p.slug : undefined}>
-    <img src={img} srcset={`${img} 1200w, ${img2x} 2400w`} sizes="(min-width: 768px) 50vw, 100vw" width="1200" height="750" alt={`Screenshot of ${p.title}`} loading={eager ? 'eager' : 'lazy'} decoding="async" class="aspect-[8/5] w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]" />
-  </a>
+  <Wrapper href={caseHref ?? (live ? p.url! : undefined)} target={caseHref ? undefined : live ? '_blank' : undefined} rel={caseHref ? undefined : live ? 'noopener' : undefined} class="block overflow-hidden rounded-xl border border-line bg-paper-pure shadow-sm" data-outbound={!caseHref && live ? p.slug : undefined}>
+    <img src={img} srcset={`${img} 1200w, ${img2x} 2400w`} sizes="(min-width: 768px) 50vw, 100vw" width="1200" height="750" alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" class="aspect-[8/5] w-full object-cover object-top transition duration-500 group-hover:scale-[1.02]" />
+  </Wrapper>
   <div>
     <p class="eyebrow">{kindLabel}{p.year ? ` · ${p.year}` : ''}</p>
     <h3 class="mt-1 text-xl">{p.title}</h3>
@@ -1782,8 +1788,9 @@ interface Props { locale: Locale; project: Project }
 const { locale, project: p } = Astro.props;
 const tr = t(locale);
 const html = await renderPortableText(p.caseStudy ?? [], { imageUrl: (b) => urlFor(b as any).width(1400).url() });
-const hero = urlFor(p.screenshot).width(1600).url();
+const hero = urlFor(p.screenshot).width(1600).height(1000).fit('crop').url();
 const summary = p.summary;
+const alt = `${tr('work.screenshotOf')} ${p.title}`;
 const live = p.status === 'live' && p.url;
 ---
 <Base {locale} title={`${p.title} — Jose Uribe`} description={summary} ogImage={urlFor(p.screenshot).width(1200).height(630).fit('crop').url()} jsonLd={creativeWorkJsonLd(p, locale)}>
@@ -1797,7 +1804,7 @@ const live = p.status === 'live' && p.url;
       {p.year && <div><dt class="eyebrow">{tr('work.year')}</dt><dd class="mt-1">{p.year}</dd></div>}
       {p.stack && p.stack.length > 0 && <div class="col-span-2 md:col-span-1"><dt class="eyebrow">{tr('work.stack')}</dt><dd class="mt-1">{p.stack.join(' · ')}</dd></div>}
     </dl>
-    <img src={hero} width="1600" alt={`Screenshot of ${p.title}`} loading="eager" decoding="async" class="mt-12 w-full rounded-xl border border-line" />
+    <img src={hero} width="1600" height="1000" alt={alt} loading="eager" decoding="async" class="mt-12 w-full rounded-xl border border-line" />
     <div class="prose-site mt-12" set:html={html} />
     {live && <p class="mt-10"><a href={p.url!} target="_blank" rel="noopener" class="btn-primary" data-outbound={p.slug}>{tr('work.viewSite')} ↗</a></p>}
   </article>
