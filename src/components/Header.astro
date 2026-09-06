@@ -15,7 +15,7 @@ const isActive = (href: string) => current === localizePath(href, locale) || cur
 ---
 <header class="wrap flex items-center justify-between py-6">
   <a href={localizePath('/', locale)} class="font-display text-xl tracking-tight">Jose Uribe</a>
-  <nav aria-label="Primary" class="hidden items-center gap-7 text-sm md:flex">
+  <nav aria-label={tr('nav.primary')} class="hidden items-center gap-7 text-sm md:flex">
     {items.map(([href, label]) => (
       <a href={localizePath(href, locale)} class:list={['hover:text-ink', isActive(href) ? 'text-ink font-medium' : 'text-ink-mut']} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>
     ))}
@@ -24,7 +24,7 @@ const isActive = (href: string) => current === localizePath(href, locale) || cur
   </nav>
   <details class="md:hidden">
     <summary class="btn-ghost cursor-pointer list-none py-2!">{tr('nav.menu')}</summary>
-    <nav aria-label="Primary" class="absolute inset-x-0 z-20 mt-3 flex flex-col gap-1 border-y border-line bg-paper px-5 py-4 text-base">
+    <nav aria-label={tr('nav.primary')} class="absolute inset-x-0 z-20 mt-3 flex flex-col gap-1 border-y border-line bg-paper px-5 py-4 text-base">
       {items.map(([href, label]) => (
         <a href={localizePath(href, locale)} class="py-2">{label}</a>
       ))}

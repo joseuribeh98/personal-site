@@ -11,6 +11,8 @@ const en = {
   'nav.contact': 'Contact',
   'nav.menu': 'Menu',
   'nav.lang': 'Language',
+  'nav.skip': 'Skip to content',
+  'nav.primary': 'Primary',
 
   'footer.built': 'Built with Astro and Sanity — the same stack I sell.',
   'footer.location': 'Cali, Colombia · US Eastern hours',
@@ -107,6 +109,8 @@ const es: Record<UiKey, string> = {
   'nav.contact': 'Contacto',
   'nav.menu': 'Menú',
   'nav.lang': 'Idioma',
+  'nav.skip': 'Saltar al contenido',
+  'nav.primary': 'Principal',
 
   'footer.built': 'Hecho con Astro y Sanity — el mismo stack que vendo.',
   'footer.location': 'Cali, Colombia · horario de la costa este de EE.UU.',
@@ -201,6 +205,8 @@ const pt: Record<UiKey, string> = {
   'nav.contact': 'Contato',
   'nav.menu': 'Menu',
   'nav.lang': 'Idioma',
+  'nav.skip': 'Pular para o conteúdo',
+  'nav.primary': 'Principal',
 
   'footer.built': 'Feito com Astro e Sanity — a mesma stack que eu vendo.',
   'footer.location': 'Cali, Colômbia · horário da costa leste dos EUA',

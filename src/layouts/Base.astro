@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import Analytics from '@vercel/analytics/astro';
-import { LOCALES, DEFAULT_LOCALE, localizePath, stripLocale, type Locale } from '../i18n/ui';
+import { LOCALES, DEFAULT_LOCALE, localizePath, stripLocale, t, type Locale } from '../i18n/ui';
 import { site } from '../config/site';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -17,6 +17,7 @@ interface Props {
 }
 const { locale, title, description, alternates, ogImage = '/og-default.png', noindex = false, jsonLd } = Astro.props;
 
+const tr = t(locale);
 const { path } = stripLocale(Astro.url.pathname);
 const altHref = (l: Locale) => new URL(alternates?.[l] ?? localizePath(path, l), site.url).href;
 const canonical = altHref(locale);
@@ -59,7 +60,7 @@ const ga4 = site.ga4Id;
     )}
   </head>
   <body class="min-h-dvh">
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-ink focus:px-3 focus:py-2 focus:text-paper">Skip to content</a>
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-ink focus:px-3 focus:py-2 focus:text-paper">{tr('nav.skip')}</a>
     <Header {locale} {alternates} />
     <main id="main">
       <slot />
