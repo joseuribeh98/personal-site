@@ -50,7 +50,7 @@ El sitio personal de Jose Uribe: portafolio de 12 proyectos, blog autogestionabl
 
 Los proyectos **sin** `caseStudy` no tienen página propia: su tarjeta enlaza al sitio vivo (o a nada, si `status != live`).
 
-**Orden de idiomas:** EN es el original y se escribe primero. ES completo al lanzar. PT puede lanzarse con las páginas fijas traducidas y el blog parcial — Astro i18n con `fallbackType: 'redirect'` cubre lo que falte sin romper.
+**Orden de idiomas:** EN es el original y se escribe primero. ES completo al lanzar. PT puede lanzarse con las páginas fijas traducidas y el blog parcial. Nota (revisión final 2026-09-06): el `fallback` de Astro i18n es por ruta, no por path — no cubre un post que existe en EN pero no en PT. Para esos casos el selector de idioma enlaza al índice del blog del idioma destino (`fallbackPath`), y `hreflang` solo lista las versiones publicadas.
 
 ---
 
@@ -144,7 +144,7 @@ Se ejecuta en implementación con la skill `frontend-design`. Lo que este spec f
 - `<title>`/`description` por página e idioma; `hreflang` por `@astrojs/sitemap` + `<link rel="alternate">`.
 - Open Graph con imagen por página (la captura del proyecto en `/work/[slug]`, la portada en posts).
 - JSON-LD: `Person` (Jose) en home/about, `Article` en posts, `CreativeWork` en fichas.
-- **Eventos GA4 mínimos:** `contact_submit`, `cta_click` (con `location`), `project_outbound` (clic a sitio de cliente), `book_call`.
+- **Eventos GA4 mínimos:** `contact_submit`, `cta_click` (con `location`), `project_outbound` (clic a sitio de cliente — solo eso), `social_click` (con `network`: upwork/github/linkedin), `book_call`.
 
 ---
 
@@ -162,7 +162,7 @@ Se ejecuta en implementación con la skill `frontend-design`. Lo que este spec f
 ## 9. Criterios de aceptación
 
 - [ ] Los 12 proyectos publicados con captura; los 4 con ficha completa; Zohara sin enlace.
-- [ ] Blog operativo desde `/admin`: Jose publica un post en EN y aparece en el sitio tras el rebuild sin tocar código.
+- [ ] Blog operativo desde el Studio standalone: Jose publica un post en EN y aparece en el sitio tras el rebuild sin tocar código.
 - [ ] Home, work, services, about y blog en EN y ES. PT con páginas fijas al menos.
 - [ ] Formulario de contacto entrega al correo y dispara `contact_submit` en GA4.
 - [ ] Lighthouse móvil ≥ 95 en home y en una ficha de proyecto.
