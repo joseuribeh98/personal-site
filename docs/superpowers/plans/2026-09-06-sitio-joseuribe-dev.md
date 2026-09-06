@@ -2044,13 +2044,15 @@ const blocks = [
 ```astro
 ---
 import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import Base from '../layouts/Base.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import { t, type Locale } from '../i18n/ui';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
-const hasPhoto = existsSync(new URL('../../public/images/jose.jpg', import.meta.url));
+// process.cwd() is the project root during `astro build`; import.meta.url would point at the compiled chunk.
+const hasPhoto = existsSync(join(process.cwd(), 'public/images/jose.jpg'));
 const facts = [tr('about.fact.location'), tr('about.fact.timezone'), tr('about.fact.languages'), tr('about.fact.upwork')];
 ---
 <Base {locale} title={`${tr('about.title')} — Jose Uribe`} description={tr('about.p1')}>
