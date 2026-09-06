@@ -1078,6 +1078,16 @@ describe('renderPortableText', () => {
     expect(html).toContain('alt="A chart"');
     expect(html).toContain('loading="lazy"');
   });
+
+  it('escapes quotes and ampersands in alt text and image urls (attribute context)', async () => {
+    const html = await renderPortableText(
+      [{ _type: 'image', _key: 'i', alt: 'She said "hi" & left', asset: { _ref: 'image-abc123-800x600-png' } }],
+      { imageUrl: () => 'https://cdn.example/a.png?w=1&h=2' },
+    );
+    expect(html).toContain('alt="She said &quot;hi&quot; &amp; left"');
+    expect(html).toContain('src="https://cdn.example/a.png?w=1&amp;h=2"');
+    expect(html).not.toContain('"hi"');
+  });
 });
 ```
 
@@ -1114,7 +1124,9 @@ function defaultImageUrl(block: ImageBlock): string {
   return `/_sanity-image-missing/${block.asset._ref}`;
 }
 
-const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// Attribute-safe escaper: encodes &, <, >, and both quote characters.
+const escape = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 export async function renderPortableText(blocks: unknown[], opts: RenderOptions = {}): Promise<string> {
   const highlight = opts.highlight ?? defaultHighlight;
@@ -1136,7 +1148,7 @@ export async function renderPortableText(blocks: unknown[], opts: RenderOptions 
       html: ({ value }) => (value as { html: string }).html,
       image: ({ value }) => {
         const v = value as ImageBlock;
-        return `<img src="${imageUrl(v)}" alt="${escape(v.alt ?? '')}" loading="lazy" decoding="async" />`;
+        return `<img src="${escape(imageUrl(v))}" alt="${escape(v.alt ?? '')}" loading="lazy" decoding="async" />`;
       },
     },
   };
