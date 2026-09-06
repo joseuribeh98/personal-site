@@ -2299,7 +2299,9 @@ Run: `npm test` — Expected: PASS
 import { track } from '../lib/analytics';
 
 document.addEventListener('click', (e) => {
-  const el = (e.target as HTMLElement).closest<HTMLElement>('[data-cta],[data-outbound],[data-book]');
+  // e.target can be a Text node (Safari) — resolve to the nearest Element first.
+  const origin = e.target instanceof Element ? e.target : (e.target as Node | null)?.parentElement;
+  const el = origin?.closest<HTMLElement>('[data-cta],[data-outbound],[data-book]');
   if (!el) return;
   if (el.dataset.cta) track('cta_click', { location: el.dataset.cta });
   if (el.dataset.outbound) track('project_outbound', { project: el.dataset.outbound });
