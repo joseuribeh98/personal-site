@@ -13,13 +13,13 @@ export default defineConfig({
   output: 'static',
 
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en', 'es', 'pt'],
+    defaultLocale: 'es',
+    locales: ['es', 'en', 'pt'],
     routing: {
       prefixDefaultLocale: false,
       fallbackType: 'redirect',
     },
-    fallback: { es: 'en', pt: 'en' },
+    fallback: { en: 'es', pt: 'es' },
   },
 
   vite: {
@@ -34,9 +34,10 @@ export default defineConfig({
       // Studio is standalone in ../studio-personal-site — never embedded here
     }),
     sitemap({
+      filter: (page) => !/\/404\/?$/.test(page),
       i18n: {
-        defaultLocale: 'en',
-        locales: { en: 'en', es: 'es', pt: 'pt-BR' },
+        defaultLocale: 'es',
+        locales: { es: 'es', en: 'en', pt: 'pt-BR' },
       },
     }),
   ],

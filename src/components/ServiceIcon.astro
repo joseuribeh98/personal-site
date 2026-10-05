@@ -1,0 +1,13 @@
+---
+// Icons for the three services (1: zero to production, 2: websites, 3: applied AI).
+interface Props { n: 1 | 2 | 3; class?: string }
+const { n, class: cls } = Astro.props;
+const paths = {
+  1: 'M12 2v6M12 22v-6M4.9 4.9l4.2 4.2M14.9 14.9l4.2 4.2M2 12h6M22 12h-6M4.9 19.1l4.2-4.2M14.9 9.1l4.2-4.2',
+  2: 'M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 9h18M8 21h8',
+  3: 'M12 3l1.8 4.6 4.7 1.8-4.7 1.8L12 16l-1.8-4.8-4.7-1.8 4.7-1.8zM19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z',
+};
+---
+<span class:list={['flex size-11 shrink-0 items-center justify-center rounded-xl text-accent', cls]}>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={paths[n]} /></svg>
+</span>

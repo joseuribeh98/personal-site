@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { t, localizePath, stripLocale, LOCALES, DEFAULT_LOCALE, LANG_TAGS } from './ui';
 
 describe('i18n core', () => {
-  it('exposes the three locales with en as default', () => {
-    expect(LOCALES).toEqual(['en', 'es', 'pt']);
-    expect(DEFAULT_LOCALE).toBe('en');
+  it('exposes the three locales with es as default', () => {
+    expect(LOCALES).toEqual(['es', 'en', 'pt']);
+    expect(DEFAULT_LOCALE).toBe('es');
   });
 
   it('LANG_TAGS uses BCP-47 pt-BR for Portuguese', () => {
@@ -17,18 +17,18 @@ describe('i18n core', () => {
     expect(t('en')('nav.work')).toBe('Work');
   });
 
-  it('localizePath prefixes non-default locales and leaves en at root', () => {
-    expect(localizePath('/work', 'en')).toBe('/work');
-    expect(localizePath('/work', 'es')).toBe('/es/work');
+  it('localizePath prefixes non-default locales and leaves es at root', () => {
+    expect(localizePath('/work', 'es')).toBe('/work');
+    expect(localizePath('/work', 'en')).toBe('/en/work');
     expect(localizePath('/', 'pt')).toBe('/pt/');
-    expect(localizePath('/es/work', 'pt')).toBe('/pt/work'); // re-localizes
-    expect(localizePath('/pt/blog/x', 'en')).toBe('/blog/x');
+    expect(localizePath('/en/work', 'pt')).toBe('/pt/work'); // re-localizes
+    expect(localizePath('/pt/blog/x', 'es')).toBe('/blog/x');
   });
 
   it('stripLocale detects the locale prefix', () => {
-    expect(stripLocale('/es/work')).toEqual({ locale: 'es', path: '/work' });
+    expect(stripLocale('/en/work')).toEqual({ locale: 'en', path: '/work' });
     expect(stripLocale('/pt/')).toEqual({ locale: 'pt', path: '/' });
-    expect(stripLocale('/work')).toEqual({ locale: 'en', path: '/work' });
-    expect(stripLocale('/estate')).toEqual({ locale: 'en', path: '/estate' }); // no false prefix match
+    expect(stripLocale('/work')).toEqual({ locale: 'es', path: '/work' });
+    expect(stripLocale('/english')).toEqual({ locale: 'es', path: '/english' }); // no false prefix match
   });
 });

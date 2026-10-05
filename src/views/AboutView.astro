@@ -2,7 +2,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import Base from '../layouts/Base.astro';
-import SectionHeading from '../components/SectionHeading.astro';
+import ContactBlock from '../components/ContactBlock.astro';
 import { t, type Locale } from '../i18n/ui';
 import { personJsonLd } from '../lib/seo';
 interface Props { locale: Locale }
@@ -10,23 +10,54 @@ const { locale } = Astro.props;
 const tr = t(locale);
 // process.cwd() is the project root during `astro build`; import.meta.url would point at the compiled chunk.
 const hasPhoto = existsSync(join(process.cwd(), 'public/images/jose.jpg'));
-const facts = [tr('about.fact.location'), tr('about.fact.timezone'), tr('about.fact.languages'), tr('about.fact.upwork')];
+const facts = [tr('about.fact.location'), tr('about.fact.languages'), tr('about.fact.study'), tr('about.fact.upwork')];
+// Only tools that appear in shipped work or in the day job.
+const stack = [
+  [tr('about.stack.front'), ['Next.js', 'React', 'Astro', 'TypeScript', 'Tailwind CSS']],
+  [tr('about.stack.back'), ['NestJS', 'PostgreSQL', 'Supabase', 'Node.js']],
+  [tr('about.stack.cloud'), ['Azure', 'Azure DevOps', 'Vercel', 'Cloudflare']],
+  [tr('about.stack.content'), ['Sanity', 'WordPress', 'Markdown']],
+] as const;
 ---
-<Base {locale} title={`${tr('about.title')} — Jose Uribe`} description={tr('about.p1')} jsonLd={personJsonLd()}>
-  <section class="wrap grid gap-12 py-16 md:grid-cols-[2fr_1fr] md:py-24">
-    <div>
-      <SectionHeading as="h1" title={tr('about.title')} />
-      <div class="prose-site mt-8">
+<Base {locale} title={`${tr('about.title')} — Jose Uribe`} description={tr('about.lead')} jsonLd={personJsonLd()}>
+  <section class="wrap grid gap-x-16 gap-y-12 pt-14 pb-24 md:pt-20 lg:grid-cols-[3fr_2fr]">
+    <div class="flex flex-col gap-8">
+      <h1 class="fade-1 text-display-xl leading-none tracking-[-0.04em]">{tr('about.title')}</h1>
+      <p class="fade-2 text-[clamp(22px,2.2vw,30px)] leading-[1.3] font-semibold tracking-[-0.02em] text-balance">{tr('about.lead')}</p>
+      <div class="fade-3 flex max-w-[620px] flex-col gap-5 text-lg text-ink-mut text-pretty">
         <p>{tr('about.p1')}</p>
         <p>{tr('about.p2')}</p>
         <p>{tr('about.p3')}</p>
+        <p>{tr('about.p4')}</p>
       </div>
     </div>
-    <aside>
-      {hasPhoto && <img src="/images/jose.jpg" alt="Jose Uribe" width="800" height="1000" loading="eager" decoding="async" class="aspect-[4/5] w-full rounded-xl object-cover" />}
-      <ul class="mt-6 grid gap-2 text-sm text-ink-mut">
-        {facts.map((f) => <li class="border-t border-line pt-2">{f}</li>)}
+    <aside class="slide-in flex flex-col gap-6 self-start">
+      {hasPhoto
+        ? <img src="/images/jose.jpg" alt="Jose Uribe" width="800" height="1000" loading="eager" decoding="async" class="aspect-[4/5] w-full rounded-[160px_160px_24px_24px] border border-line object-cover" />
+        : <div class="grid-bg aspect-[4/5] w-full rounded-[160px_160px_24px_24px] border border-line bg-paper-pure" aria-hidden="true"></div>}
+      <ul class="flex flex-col">
+        {facts.map((f) => <li class="border-t border-line py-3 font-mono text-[13px] text-ink-mut">{f}</li>)}
       </ul>
     </aside>
   </section>
+
+  <section class="wrap flex flex-col gap-10 pb-12">
+    <h2 class="text-display-lg leading-[1.02]" data-reveal>{tr('about.stack.title')}</h2>
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {stack.map(([group, tools]) => (
+        <div class="flex flex-col gap-4 rounded-[20px] border border-line bg-paper-2 p-7">
+          <p class="eyebrow">{group}</p>
+          <ul class="flex flex-wrap gap-2">
+            {tools.map((tool) => <li class="tag">{tool}</li>)}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <ContactBlock {locale} />
+
+  <script>
+    import '../scripts/motion.ts';
+  </script>
 </Base>

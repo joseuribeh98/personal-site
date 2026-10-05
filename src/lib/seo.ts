@@ -10,11 +10,24 @@ export function personJsonLd() {
     '@type': 'Person',
     name: site.name,
     url: site.url,
-    jobTitle: 'Full-stack developer',
+    jobTitle: 'Web developer',
     email: site.email,
+    image: new URL('/og-es.png', site.url).href,
+    knowsAbout: ['Next.js', 'NestJS', 'Astro', 'TypeScript', 'PostgreSQL', 'Azure', 'Product development'],
     address: { '@type': 'PostalAddress', addressLocality: 'Cali', addressCountry: 'CO' },
     sameAs: [site.upwork, site.github, site.linkedin],
-    knowsLanguage: ['en', 'es', 'pt'],
+    knowsLanguage: ['es', 'en', 'pt'],
+  };
+}
+
+export function websiteJsonLd(locale: Locale) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'joseuribe.dev',
+    url: abs('/', locale),
+    inLanguage: LANG_TAGS[locale],
+    publisher: { '@type': 'Person', name: site.name, url: site.url },
   };
 }
 
@@ -41,4 +54,11 @@ export function articleJsonLd(post: Post, locale: Locale) {
     mainEntityOfPage: abs(`/blog/${post.slug}`, locale),
     author: { '@type': 'Person', name: site.name, url: site.url },
   };
+}
+
+/** Search snippets cut around 160 characters; trim on a word boundary so the cut never lands mid-word. */
+export function metaDescription(text: string, max = 160): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max - 1);
+  return cut.slice(0, cut.lastIndexOf(' ')).replace(/[\s,.;:—-]+$/, '') + '…';
 }

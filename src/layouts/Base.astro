@@ -5,6 +5,7 @@ import { LOCALES, DEFAULT_LOCALE, LANG_TAGS, localizePath, stripLocale, t, type 
 import { site } from '../config/site';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { metaDescription } from '../lib/seo';
 
 interface Props {
   locale: Locale;
@@ -16,9 +17,10 @@ interface Props {
   jsonLd?: object | object[];
   fallbackPath?: string;
 }
-const { locale, title, description, alternates, ogImage = '/og-default.png', noindex = false, jsonLd, fallbackPath } = Astro.props;
+const { locale, title, description: rawDescription, alternates, ogImage = `/og-${locale}.png`, noindex = false, jsonLd, fallbackPath } = Astro.props;
 
 const tr = t(locale);
+const description = metaDescription(rawDescription);
 const { path } = stripLocale(Astro.url.pathname);
 const altHref = (l: Locale) => new URL(alternates?.[l] ?? localizePath(path, l), site.url).href;
 const canonical = altHref(locale);
@@ -35,8 +37,12 @@ const ga4 = site.ga4Id;
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
     {(alternates ? (Object.keys(alternates) as Locale[]) : LOCALES).map((l) => <link rel="alternate" hreflang={LANG_TAGS[l]} href={altHref(l)} />)}
-    {(!alternates || alternates.en) && <link rel="alternate" hreflang="x-default" href={altHref(DEFAULT_LOCALE)} />}
+    {(!alternates || alternates[DEFAULT_LOCALE]) && <link rel="alternate" hreflang="x-default" href={altHref(DEFAULT_LOCALE)} />}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="author" content={site.name} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
@@ -45,8 +51,15 @@ const ga4 = site.ga4Id;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL(ogImage, site.url).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    {LOCALES.filter((l) => l !== locale).map((l) => <meta property="og:locale:alternate" content={{ en: 'en_US', es: 'es_CO', pt: 'pt_BR' }[l]} />)}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#f5f1e8" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, site.url).href} />
+    <meta name="theme-color" content="#0b0c0f" />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     {ga4 && (
       <>

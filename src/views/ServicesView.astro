@@ -1,37 +1,100 @@
 ---
 import Base from '../layouts/Base.astro';
-import SectionHeading from '../components/SectionHeading.astro';
-import { t, localizePath, type Locale } from '../i18n/ui';
+import ServiceIcon from '../components/ServiceIcon.astro';
+import ContactBlock from '../components/ContactBlock.astro';
+import { t, localizePath, type Locale, type UiKey } from '../i18n/ui';
+import { getProjects, getCaseStudySlugs } from '../lib/sanity';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
-const blocks = [
-  { id: 'wp', title: tr('services.wp.title'), desc: tr('services.wp.desc'), bullets: [tr('services.wp.b1'), tr('services.wp.b2'), tr('services.wp.b3')] },
-  { id: 'apps', title: tr('services.apps.title'), desc: tr('services.apps.desc'), bullets: [tr('services.apps.b1'), tr('services.apps.b2'), tr('services.apps.b3')] },
-  { id: 'care', title: tr('services.care.title'), desc: tr('services.care.desc'), bullets: [] },
-];
+
+const [projects, caseSlugs] = await Promise.all([getProjects(locale), getCaseStudySlugs()]);
+// Proof per service: real projects that did this job. Missing slugs simply drop out.
+const proof: Record<1 | 2 | 3, string[]> = {
+  1: ['armony', 'hablo-portugues-app'],
+  2: ['silas-veloso', 'enlace', 'hablo-portugues'],
+  3: [],
+};
+const examplesFor = (n: 1 | 2 | 3) =>
+  proof[n].map((slug) => projects.find((p) => p.slug === slug)).filter((p) => p !== undefined).map((p) => ({
+    name: p.title.split(' — ')[0],
+    href: caseSlugs.includes(p.slug) ? localizePath(`/work/${p.slug}`, locale) : p.url ?? null,
+    external: !caseSlugs.includes(p.slug),
+    slug: p.slug,
+  }));
+const services = ([1, 2, 3] as const).map((n) => ({
+  n,
+  id: ['zero', 'sites', 'ai'][n - 1],
+  title: tr(`home.s${n}.title` as UiKey),
+  text: tr(`home.s${n}.text` as UiKey),
+  bullets: [1, 2, 3, 4].map((b) => tr(`services.s${n}.b${b}` as UiKey)),
+  examples: examplesFor(n),
+}));
+const steps = [1, 2, 3, 4].map((n) => [tr(`home.flow.s${n}.title` as UiKey), tr(`services.process.s${n}` as UiKey)]);
 ---
 <Base {locale} title={`${tr('services.title')} — Jose Uribe`} description={tr('services.lead')}>
-  <section class="wrap py-16 md:py-24">
-    <SectionHeading as="h1" title={tr('services.title')} lead={tr('services.lead')} />
-    <div class="mt-14 grid gap-14">
-      {blocks.map((b, i) => (
-        <section id={b.id} class="grid gap-6 border-t border-line pt-10 md:grid-cols-[1fr_2fr]">
-          <div>
-            <p class="eyebrow">0{i + 1}</p>
-            <h2 class="mt-2 text-display-md">{b.title}</h2>
-          </div>
-          <div>
-            <p class="text-lg text-ink-2">{b.desc}</p>
-            {b.bullets.length > 0 && (
-              <ul class="mt-6 grid gap-3 text-ink-mut">
-                {b.bullets.map((x) => <li class="flex gap-3"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"></span><span>{x}</span></li>)}
-              </ul>
-            )}
-          </div>
-        </section>
-      ))}
-    </div>
-    <p class="mt-16"><a href={localizePath('/#contact', locale)} class="btn-primary" data-cta="services-contact">{tr('services.cta')}</a></p>
+  <section class="wrap flex flex-col gap-7 pt-14 pb-20 md:pt-20">
+    <h1 class="fade-1 text-display-xl leading-none tracking-[-0.04em]">{tr('services.title')}</h1>
+    <p class="fade-2 max-w-[620px] text-[19px] text-ink-mut text-pretty">{tr('services.lead')}</p>
   </section>
+
+  <div class="wrap flex flex-col">
+    {services.map((s) => (
+      <section id={s.id} class="grid scroll-mt-8 gap-x-16 gap-y-8 border-t border-line py-14 lg:grid-cols-2">
+        <div class="flex flex-col gap-5">
+          <ServiceIcon n={s.n} class="bg-paper-2 border border-line" />
+          <h2 class="text-display-lg leading-[1.02] text-balance">{s.title}</h2>
+          <p class="max-w-[520px] text-lg text-ink-mut text-pretty">{s.text}</p>
+        </div>
+        <div class="flex flex-col gap-8">
+          <div class="flex flex-col gap-4">
+            <p class="eyebrow">{tr('services.includes')}</p>
+            <ul class="grid gap-3 sm:grid-cols-2">
+              {s.bullets.map((b) => (
+                <li class="flex gap-3 rounded-2xl border border-line bg-paper-2 px-5 py-4">
+                  <svg class="mt-1 shrink-0 text-accent" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {s.examples.length > 0 && (
+            <div class="flex flex-col gap-4">
+              <p class="eyebrow">{tr('services.examples')}</p>
+              <ul class="flex flex-wrap gap-2.5">
+                {s.examples.map((e) => (
+                  <li>
+                    {e.href
+                      ? <a href={e.href} target={e.external ? '_blank' : undefined} rel={e.external ? 'noopener' : undefined} data-outbound={e.external ? e.slug : undefined} class="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2.5 text-[15px] font-semibold transition-colors hover:border-accent hover:text-accent">{e.name}<span aria-hidden="true">{e.external ? '↗' : '→'}</span></a>
+                      : <span class="inline-flex rounded-full border border-line px-4 py-2.5 text-[15px] font-semibold">{e.name}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <section class="bg-light text-light-ink">
+    <div class="wrap flex flex-col gap-12 py-24">
+      <h2 class="text-display-lg leading-[1.02]" data-reveal>{tr('services.process.title')}</h2>
+      <ol class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {steps.map(([title, text], i) => (
+          <li class="flex flex-col gap-3 rounded-[20px] border border-light-line bg-light-card p-7">
+            <span class:list={['font-mono text-xs', i === 3 ? 'text-light-accent' : 'text-light-mut']}>0{i + 1}</span>
+            <h3 class="text-2xl leading-[1.1] tracking-[-0.03em]">{title}</h3>
+            <p class="text-light-mut">{text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <ContactBlock {locale} />
+
+  <script>
+    import '../scripts/motion.ts';
+  </script>
 </Base>

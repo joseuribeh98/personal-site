@@ -1,0 +1,65 @@
+---
+// Wireframe → finished screen, revealed by a sweeping handle. Decorative: the caption is the only text exposed.
+import { t, type Locale } from '../i18n/ui';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+const steps = [tr('home.fig.s1'), tr('home.fig.s2'), tr('home.fig.s3'), tr('home.fig.s4')];
+---
+<figure class="slide-in relative m-0 min-w-0">
+  <div class="relative ml-auto flex aspect-[4/5] w-full max-w-[560px] items-center justify-center overflow-hidden rounded-[240px_240px_28px_28px] border border-line bg-paper-pure">
+    <div class="grid-bg absolute inset-0"></div>
+    <div class="absolute inset-0 bg-linear-to-b from-transparent from-55% to-paper/85"></div>
+    <div aria-hidden="true" class="absolute inset-0 flex items-center justify-center pb-12">
+      <div class="relative h-[400px] w-[300px] max-w-[80%] overflow-hidden rounded-[20px] border border-line bg-[#0f1115]">
+        <svg viewBox="0 0 300 400" class="absolute inset-0 size-full" fill="none" stroke="#6b717c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMinYMin slice">
+          <path d="M25 29 C 70 27, 120 31, 168 28" />
+          <path d="M26 41 C 60 39, 110 43, 160 40" stroke-width="3" />
+          <path d="M25 60 C 50 59, 80 62, 118 59" stroke-width="1.2" stroke="#4e545d" />
+          <path d="M24 85 L 276 83 L 277 90 L 25 92 Z" />
+          <path d="M26 87 C 90 86, 170 89, 246 86" stroke-width="3" stroke="#8a9099" />
+          {[115, 163, 211, 259].map((y, i) => (
+            <>
+              <path d={`M25 ${y} L 46 ${y - 2} L 47 ${y + 21} L 26 ${y + 22} Z`} />
+              {i < 3 && <path d={`M30 ${y + 10} L 36 ${y + 16} L 43 ${y + 4}`} />}
+              <path d={`M62 ${y + 10} C 100 ${y + 8}, 140 ${y + 12}, ${172 + i * 8} ${y + 9}`} />
+            </>
+          ))}
+          <path d="M26 320 C 24 320, 24 366, 28 366 L 272 368 C 276 368, 277 322, 273 320 Z" />
+          <path d="M118 343 C 140 342, 160 345, 182 342" stroke="#8a9099" stroke-width="2.4" />
+          <path d="M200 70 C 230 40, 262 36, 282 52" stroke="#4e545d" stroke-width="1.2" />
+          <path d="M208 364 C 240 392, 268 388, 286 372" stroke="#4e545d" stroke-width="1.2" />
+        </svg>
+
+        <div class="wipe absolute inset-0 flex flex-col bg-paper-pure px-6 py-5">
+          <div class="flex h-[50px] flex-col gap-1">
+            <span class="text-xl leading-none font-extrabold tracking-[-0.03em]">{tr('home.fig.title')}</span>
+            <span class="text-[13px] text-ink-soft">{tr('home.fig.version')}</span>
+          </div>
+          <div class="mt-3.5 h-1.5 overflow-hidden rounded-full bg-line"><div class="size-full bg-accent"></div></div>
+          <ul class="mt-4.5">
+            {steps.map((s) => (
+              <li class="flex h-12 items-center gap-3.5">
+                <span class="flex size-[22px] items-center justify-center rounded-md bg-accent">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0b0c0f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7" /></svg>
+                </span>
+                <span class="text-[15px] font-medium">{s}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="mt-auto flex h-12 items-center justify-center gap-2.5 rounded-xl bg-accent text-[15px] font-bold text-paper">
+            {tr('home.fig.publish')}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </div>
+        </div>
+
+        <div class="wipe-handle absolute inset-y-0 left-0 -ml-px w-0.5 bg-ink shadow-[0_0_24px_rgb(255_255_255/0.35)]">
+          <span class="absolute top-1/2 left-1/2 -mt-[15px] -ml-[15px] flex size-[30px] items-center justify-center rounded-full bg-ink">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0b0c0f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-5 6 5 6M15 6l5 6-5 6" /></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+    <figcaption class="absolute inset-x-6 bottom-[22px] font-mono text-xs text-ink-mut">{tr('home.fig.label')}</figcaption>
+  </div>
+</figure>

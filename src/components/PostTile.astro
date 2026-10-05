@@ -1,0 +1,22 @@
+---
+import { localizePath, LANG_TAGS, type Locale } from '../i18n/ui';
+import type { Post } from '../lib/content';
+import { urlFor } from '../lib/sanity';
+interface Props { post: Post; locale: Locale; index?: number; as?: 'h2' | 'h3' }
+const { post, locale, index = 0, as: Tag = 'h3' }: Props = Astro.props;
+const date = new Date(post.publishedAt).toLocaleDateString(LANG_TAGS[locale], { year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
+// Posts without a cover get a tinted grid, cycling so neighbours never match.
+const tint = ['bg-[#1e2a3a]', 'bg-[#2e1f3a]', 'bg-[#1f3a30]'][index % 3];
+---
+<a href={localizePath(`/blog/${post.slug}`, locale)} class="card flex flex-col gap-4.5">
+  <div class="aspect-[16/10] overflow-hidden rounded-xl bg-paper-pure">
+    {post.cover
+      ? <img class="img size-full object-cover" src={urlFor(post.cover).width(800).height(500).fit('crop').url()} width="800" height="500" alt="" loading="lazy" decoding="async" />
+      : <div class:list={['img grid-bg size-full', tint]}></div>}
+  </div>
+  <div class="flex flex-col gap-2.5 px-2 pb-2">
+    <span class="eyebrow">{date}</span>
+    <Tag class="text-[22px] leading-tight font-bold tracking-[-0.025em]">{post.title}</Tag>
+    <p class="text-[15px] text-ink-mut">{post.excerpt}</p>
+  </div>
+</a>

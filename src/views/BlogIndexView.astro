@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import SectionHeading from '../components/SectionHeading.astro';
-import PostCard from '../components/PostCard.astro';
+import PostTile from '../components/PostTile.astro';
 import { t, type Locale } from '../i18n/ui';
 import { getPosts } from '../lib/sanity';
 interface Props { locale: Locale }
@@ -10,10 +9,13 @@ const tr = t(locale);
 const posts = await getPosts(locale);
 ---
 <Base {locale} title={`${tr('blog.title')} — Jose Uribe`} description={tr('blog.lead')}>
-  <section class="wrap py-16 md:py-24">
-    <SectionHeading as="h1" title={tr('blog.title')} lead={tr('blog.lead')} />
-    <div class="mt-12 max-w-3xl">
-      {posts.length === 0 ? <p class="text-ink-mut" data-empty>{tr('blog.empty')}</p> : posts.map((post) => <PostCard {post} {locale} />)}
-    </div>
+  <section class="wrap flex flex-col gap-7 pt-14 pb-16 md:pt-20">
+    <h1 class="fade-1 text-display-xl leading-none tracking-[-0.04em]">{tr('blog.title')}</h1>
+    <p class="fade-2 max-w-[620px] text-[19px] text-ink-mut text-pretty">{tr('blog.lead')}</p>
+  </section>
+  <section class="wrap pb-28">
+    {posts.length === 0
+      ? <p class="rounded-[20px] border border-dashed border-line px-8 py-10 text-ink-mut" data-empty>{tr('blog.empty')}</p>
+      : <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">{posts.map((post, i) => <PostTile {post} {locale} index={i} as="h2" />)}</div>}
   </section>
 </Base>

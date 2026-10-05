@@ -1,7 +1,7 @@
 export const site = {
   name: 'Jose Uribe',
   url: 'https://joseuribe.dev',
-  email: 'hello@joseuribe.dev',
+  email: 'jose@overnatic.us',
   upwork: 'https://www.upwork.com/freelancers/joseuribeh',
   github: 'https://github.com/joseuribeh98',
   linkedin: 'https://www.linkedin.com/in/joseuribeh',

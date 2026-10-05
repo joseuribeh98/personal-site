@@ -3,8 +3,8 @@ import WorkDetailView from '../../views/WorkDetailView.astro';
 import { getCaseStudySlugs, getProjectBySlug } from '../../lib/sanity';
 export async function getStaticPaths() {
   const slugs = await getCaseStudySlugs();
-  return Promise.all(slugs.map(async (slug) => ({ params: { slug }, props: { project: (await getProjectBySlug('en', slug))! } })));
+  return Promise.all(slugs.map(async (slug) => ({ params: { slug }, props: { project: (await getProjectBySlug('es', slug))! } })));
 }
 const { project } = Astro.props;
 ---
-<WorkDetailView locale="en" {project} />
+<WorkDetailView locale="es" {project} />

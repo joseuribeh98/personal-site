@@ -8,13 +8,13 @@ const tr = t(locale);
 const filters = [['all', tr('work.filterAll')], ['app', tr('work.filterApp')], ['site', tr('work.filterSite')], ['wordpress', tr('work.filterWp')]] as const;
 ---
 {filter && (
-  <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label={tr('work.filterLabel')} data-filters>
+  <div class="mb-10 flex flex-wrap gap-2.5" role="group" aria-label={tr('work.filterLabel')} data-filters>
     {filters.map(([k, label], i) => (
-      <button type="button" data-filter={k} aria-pressed={i === 0 ? 'true' : 'false'} class="btn-ghost py-2! text-sm aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-paper">{label}</button>
+      <button type="button" data-filter={k} aria-pressed={i === 0 ? 'true' : 'false'} class="cursor-pointer rounded-full border border-line px-4 py-2.5 font-mono text-xs text-ink-mut transition-colors hover:border-ink hover:text-ink aria-pressed:border-accent aria-pressed:bg-accent-soft aria-pressed:text-accent">{label}</button>
     ))}
   </div>
 )}
-<div class="grid gap-10 md:grid-cols-2" data-grid>
+<div class="grid gap-6 md:grid-cols-2" data-grid>
   {projects.map((p, i) => <ProjectCard project={p} {locale} eager={i < 2} hasCase={caseSlugs.includes(p.slug)} />)}
 </div>
 <script>

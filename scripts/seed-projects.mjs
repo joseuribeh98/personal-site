@@ -26,6 +26,7 @@ const i18nRich = (obj) => Object.entries(obj).map(([lang, paragraphs]) => ({ _ke
 
 let published = 0;
 for (const p of projects) {
+  if (p.unlisted) continue; // kept for the record, never published
   const file = `tmp/screenshots/${p.slug}.png`;
   if (!existsSync(file)) {
     console.warn(`skip ${p.slug}: no screenshot at ${file} (rule: no screenshot, no publish)`);
