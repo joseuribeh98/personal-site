@@ -23,7 +23,8 @@ const hrefFor = (p: Project) =>
   caseSlugs.includes(p.slug) ? { href: localizePath(`/work/${p.slug}`, locale) } : p.status === 'live' && p.url ? { href: p.url, target: '_blank', rel: 'noopener', 'data-outbound': p.slug } : null;
 const img = (p: Project, w: number, h: number) => urlFor(p.screenshot).width(w).height(h).fit('crop').url();
 
-const stack = ['Next.js', 'NestJS', 'TypeScript', 'PostgreSQL', 'Azure', 'Astro', 'Supabase', 'Cloudflare', tr('home.marquee.ai'), tr('home.marquee.product'), tr('home.marquee.zero')];
+// Process words between the tools: the strip should read as idea → customer, not as a stack list.
+const stack = [tr('home.marquee.product'), 'Next.js', tr('home.marquee.scope'), 'NestJS', tr('home.marquee.zero'), 'PostgreSQL', tr('home.marquee.launch'), 'Azure', tr('home.marquee.metrics'), 'Astro', tr('home.marquee.ai')];
 const flow = [1, 2, 3, 4].map((n) => [tr(`home.flow.s${n}.title` as UiKey), tr(`home.flow.s${n}.text` as UiKey)]);
 const arrow = 'M5 12h14M13 6l6 6-6 6';
 ---
