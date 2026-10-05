@@ -1,6 +1,8 @@
+import { SITE_URL } from './host';
+
 export const site = {
   name: 'Jose Uribe',
-  url: 'https://joseuribe.dev',
+  url: SITE_URL,
   email: 'jose@overnatic.us',
   upwork: 'https://www.upwork.com/freelancers/joseuribeh',
   github: 'https://github.com/joseuribeh98',

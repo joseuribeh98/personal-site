@@ -25,3 +25,4 @@ pnpm-debug.log*
 .superpowers/
 tmp/
 .playwright-mcp/
+.lighthouseci/

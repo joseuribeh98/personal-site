@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://joseuribe.dev/sitemap-index.xml

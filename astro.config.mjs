@@ -4,12 +4,13 @@ import { loadEnv } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import sanity from '@sanity/astro';
 import sitemap from '@astrojs/sitemap';
+import { SITE_URL } from './src/config/host.ts';
 
 const env = loadEnv(process.env.NODE_ENV ?? 'production', process.cwd(), '');
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://joseuribe.dev',
+  site: SITE_URL,
   output: 'static',
 
   i18n: {

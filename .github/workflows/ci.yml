@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Public values (shipped to the browser anyway) — set as repo Variables, not Secrets.
+      PUBLIC_SANITY_PROJECT_ID: ${{ vars.PUBLIC_SANITY_PROJECT_ID }}
+      PUBLIC_SANITY_DATASET: ${{ vars.PUBLIC_SANITY_DATASET || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      - name: Canonical host matches production primary domain
+        run: |
+          grep -q 'https://joseuribe.dev/sitemap-index.xml' dist/robots.txt
+          ! grep -rl 'https://www.joseuribe.dev' dist --include='*.html' --include='*.xml'
+
+      - name: Lighthouse gate (mobile)
+        run: npx --yes @lhci/cli@0.14.x autorun
