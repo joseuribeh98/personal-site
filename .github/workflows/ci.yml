@@ -11,14 +11,14 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     env:
       # Public values (shipped to the browser anyway) — set as repo Variables, not Secrets.
       PUBLIC_SANITY_PROJECT_ID: ${{ vars.PUBLIC_SANITY_PROJECT_ID }}
       PUBLIC_SANITY_DATASET: ${{ vars.PUBLIC_SANITY_DATASET || 'production' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -32,4 +32,4 @@ jobs:
           ! grep -rl 'https://www.joseuribe.dev' dist --include='*.html' --include='*.xml'
 
       - name: Lighthouse gate (mobile)
-        run: npx --yes @lhci/cli@0.14.x autorun
+        run: npx --yes @lhci/cli@0.15.x autorun
