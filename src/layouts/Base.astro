@@ -6,6 +6,12 @@ import { site } from '../config/site';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { metaDescription } from '../lib/seo';
+// The h1 is the LCP element on every page. Archivo loads with font-display: swap from an
+// @import inside global.css, so the browser only discovers the woff2 after parsing the CSS —
+// late enough that the headline paints in Arial and then reflows, registering a second,
+// later LCP candidate. Preloading the latin subset collapses that chain. Only `latin`:
+// es/en/pt headline copy stays inside U+0000-00FF, and latin-ext would be dead weight.
+import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
 
 interface Props {
   locale: Locale;
@@ -32,6 +38,7 @@ const ga4 = site.ga4Id;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
