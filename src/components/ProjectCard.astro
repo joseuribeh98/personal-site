@@ -6,7 +6,11 @@ interface Props { project: Project; locale: Locale; eager?: boolean; hasCase?: b
 const { project: p, locale, eager = false, hasCase = false } = Astro.props;
 const tr = t(locale);
 const img = urlFor(p.screenshot).width(1200).height(750).fit('crop').url();
-const img2x = urlFor(p.screenshot).width(2000).height(1250).fit('crop').url();
+// Two-column grid at md+, full width below: a phone needs ~400 CSS px, so a 1200w floor
+// made it fetch a desktop crop. Small candidates let `sizes` pick an honest one.
+const srcset = [600, 900, 1200, 2000]
+  .map((w) => `${urlFor(p.screenshot).width(w).height(Math.round(w / 1.6)).fit('crop').url()} ${w}w`)
+  .join(', ');
 const name = p.title.split(' — ')[0];
 const caseHref = hasCase ? localizePath(`/work/${p.slug}`, locale) : null;
 const live = p.status === 'live' && p.url ? p.url : null;
@@ -17,7 +21,7 @@ const Tag = link ? 'a' : 'div';
 <article data-kind={p.kind} class="flex">
   <Tag {...link} class="card flex w-full flex-col gap-4">
     <div class="aspect-[16/10] overflow-hidden rounded-xl bg-paper-pure">
-      <img class="img size-full object-cover object-top" src={img} srcset={`${img} 1200w, ${img2x} 2000w`} sizes="(min-width: 768px) 50vw, 100vw" width="1200" height="750" alt={`${tr('work.screenshotOf')} ${name}`} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+      <img class="img size-full object-cover object-top" src={img} srcset={srcset} sizes="(min-width: 768px) 50vw, 100vw" width="1200" height="750" alt={`${tr('work.screenshotOf')} ${name}`} loading={eager ? 'eager' : 'lazy'} decoding="async" />
     </div>
     <div class="flex grow flex-col gap-2 px-2 pb-2">
       <span class="eyebrow">{tr(`work.kind.${p.kind}` as UiKey)}{p.year ? ` · ${p.year}` : ''}</span>

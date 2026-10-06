@@ -22,7 +22,7 @@ const og = post.cover ? urlFor(post.cover).width(1200).height(630).fit('crop').u
       <svg class="rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>{tr('blog.back')}
     </a>
     <p class="eyebrow fade-1 mt-10"><time datetime={post.publishedAt}>{date}</time></p>
-    <h1 class="fade-1 mt-4 text-display-lg leading-[1.02] text-balance">{post.title}</h1>
+    <h1 class="rise-1 mt-4 text-display-lg leading-[1.02] text-balance">{post.title}</h1>
     <p class="fade-2 mt-5 text-[19px] text-ink-mut text-pretty">{post.excerpt}</p>
     {others.length > 0 && (
       <p class="mt-5 text-sm text-ink-mut">{tr('blog.alsoIn')} {others.map((o, i) => <><a href={alternates[o.language]} hreflang={LANG_TAGS[o.language]} class="text-accent underline underline-offset-4">{LANG_NAMES[o.language]}</a>{i < others.length - 1 ? ', ' : ''}</>)}</p>
