@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { t, localizePath, stripLocale, LOCALES, DEFAULT_LOCALE, LANG_TAGS } from './ui';
+import { t, localizePath, stripLocale, LOCALES, DEFAULT_LOCALE, LANG_TAGS, type UiKey } from './ui';
+import { metaDescription } from '../lib/seo';
 
 describe('i18n core', () => {
   it('exposes the three locales with es as default', () => {
@@ -30,5 +31,36 @@ describe('i18n core', () => {
     expect(stripLocale('/pt/')).toEqual({ locale: 'pt', path: '/' });
     expect(stripLocale('/work')).toEqual({ locale: 'es', path: '/work' });
     expect(stripLocale('/english')).toEqual({ locale: 'es', path: '/english' }); // no false prefix match
+  });
+});
+
+// Every indexable page owns a title and a description written for the SERP, not reused
+// from on-page copy. The bounds are the budget Google actually renders: titles get cut
+// around 60 characters, descriptions around 160. The lower bound is the real regression
+// risk — scaffold titles like "Blog — Jose Uribe" (17) threw away two thirds of the line.
+describe('page meta', () => {
+  const PAGES = ['home', 'about', 'services', 'work', 'blog'] as const;
+
+  it.each(LOCALES)('%s titles use the SERP line without overflowing it', (locale) => {
+    for (const page of PAGES) {
+      const title = t(locale)(`${page}.metaTitle` as UiKey);
+      expect(title.length, `${locale} ${page}.metaTitle: "${title}"`).toBeGreaterThanOrEqual(35);
+      expect(title.length, `${locale} ${page}.metaTitle: "${title}"`).toBeLessThanOrEqual(60);
+    }
+  });
+
+  it.each(LOCALES)('%s descriptions pass through metaDescription() uncut', (locale) => {
+    for (const page of PAGES) {
+      const text = t(locale)(`${page}.metaDescription` as UiKey);
+      expect(text.length, `${locale} ${page}.metaDescription: "${text}"`).toBeLessThanOrEqual(160);
+      expect(metaDescription(text), `${locale} ${page}.metaDescription is truncated`).toBe(text);
+    }
+  });
+
+  it('gives each page a distinct title per locale', () => {
+    for (const locale of LOCALES) {
+      const titles = PAGES.map((p) => t(locale)(`${p}.metaTitle` as UiKey));
+      expect(new Set(titles).size, `${locale} has duplicate titles`).toBe(PAGES.length);
+    }
   });
 });

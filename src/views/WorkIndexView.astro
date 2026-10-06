@@ -9,7 +9,7 @@ const { locale } = Astro.props;
 const tr = t(locale);
 const [projects, caseSlugs] = await Promise.all([getProjects(locale), getCaseStudySlugs()]);
 ---
-<Base {locale} title={`${tr('work.title')} — Jose Uribe`} description={tr('work.lead')}>
+<Base {locale} title={tr('work.metaTitle')} description={tr('work.metaDescription')}>
   <section class="wrap flex flex-col gap-7 pt-14 pb-16 md:pt-20">
     <h1 class="fade-1 text-display-xl leading-none tracking-[-0.04em]">{tr('work.title')}</h1>
     <p class="fade-2 max-w-[620px] text-[19px] text-ink-mut text-pretty">{tr('work.lead')}</p>
