@@ -70,12 +70,27 @@ const ga4 = site.ga4Id;
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     {ga4 && (
       <>
-        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}></script>
+        {/* gtag.js is 180 KB. Fetched from <head> it competes with the font and images and
+            Lighthouse counts it on the LCP path (mobile perf ~80 with it, ~96 without). The queue
+            and gtag() stay inline so events fired before the script arrives (contact_submit)
+            wait in dataLayer; only the download waits until the page is loaded and idle. */}
         <script is:inline define:vars={{ ga4 }}>
           window.dataLayer = window.dataLayer || [];
-          function gtag(){ dataLayer.push(arguments); }
+          window.gtag = function(){ dataLayer.push(arguments); };
           gtag('js', new Date());
           gtag('config', ga4, { anonymize_ip: true });
+          function loadGtag() {
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga4;
+            document.head.appendChild(s);
+          }
+          function whenIdle() {
+            if ('requestIdleCallback' in window) requestIdleCallback(loadGtag, { timeout: 3000 });
+            else setTimeout(loadGtag, 1);
+          }
+          if (document.readyState === 'complete') whenIdle();
+          else addEventListener('load', whenIdle, { once: true });
         </script>
       </>
     )}
