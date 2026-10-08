@@ -16,7 +16,7 @@ const probe = `
           time: Math.round(e.startTime),
           url: e.url || null,
           tag: el ? el.tagName : null,
-          text: el ? (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40) : null,
+          text: el ? (el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 40) : null,
         });
       }
     }).observe({ type: 'largest-contentful-paint', buffered: true });
