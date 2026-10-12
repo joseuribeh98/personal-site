@@ -22,8 +22,10 @@ interface Props {
   noindex?: boolean;
   jsonLd?: object | object[];
   fallbackPath?: string;
+  /** Skip the site header and footer (standalone pages such as /investigacion/*). */
+  bare?: boolean;
 }
-const { locale, title, description: rawDescription, alternates, ogImage = `/og-${locale}.png`, noindex = false, jsonLd, fallbackPath } = Astro.props;
+const { locale, title, description: rawDescription, alternates, ogImage = `/og-${locale}.png`, noindex = false, jsonLd, fallbackPath, bare = false } = Astro.props;
 
 const tr = t(locale);
 const description = metaDescription(rawDescription);
@@ -97,11 +99,11 @@ const ga4 = site.ga4Id;
   </head>
   <body class="min-h-dvh">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-ink focus:px-3 focus:py-2 focus:text-paper">{tr('nav.skip')}</a>
-    <Header {locale} {alternates} {fallbackPath} />
+    {!bare && <Header {locale} {alternates} {fallbackPath} />}
     <main id="main">
       <slot />
     </main>
-    <Footer {locale} />
+    {!bare && <Footer {locale} />}
     <Analytics />
     <script>
       import '../scripts/events.ts';

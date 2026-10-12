@@ -1,0 +1,385 @@
+---
+/**
+ * Companion page of the V EISI 2026 poster (Semillero MindLab, Universidad Ean).
+ * Reached by the QR printed on the poster; not linked from the site nav and kept out of
+ * the sitemap. Light palette and Schibsted Grotesk + Atkinson Hyperlegible on purpose: it has to read as the
+ * same piece as the printed poster, not as the dark portfolio.
+ */
+import '@fontsource-variable/atkinson-hyperlegible-next';
+import '@fontsource-variable/schibsted-grotesk';
+import Base from '../layouts/Base.astro';
+import { site } from '../config/site';
+
+const title = 'Oportunidades de mercado público para las mipymes colombianas: caracterización sectorial, territorial y temporal de los procesos publicados en el SECOP II (2022-2025)';
+const pageTitle = 'Mercado público para mipymes en el SECOP II · Póster V EISI 2026';
+const description = '7 de cada 10 convocatorias públicas competitivas en el SECOP II son de mínima cuantía, con un plazo típico de 5 días para ofertar. Resumen y resultados del póster presentado en el V EISI 2026.';
+
+const resumen = [
+  'Las mipymes representan más del 99% de las empresas colombianas y el país cuenta con un marco legal que busca acercarlas a la contratación pública. Sin embargo, la investigación se ha concentrado en explicar las barreras que enfrentan y se sabe poco sobre cuántas oportunidades existen realmente a su alcance, dónde aparecen y en qué momento del año se publican.',
+  'El objetivo de esta investigación es analizar las oportunidades de mercado público potencialmente aprovechables por las mipymes colombianas, mediante la caracterización sectorial, territorial y temporal de los procesos publicados en el SECOP II entre 2022 y 2025, con el propósito de generar información útil para la toma de decisiones empresariales.',
+  'El estudio es cuantitativo y descriptivo, basado en fuente secundaria. A partir de los datos abiertos del SECOP II, con más de nueve millones de registros, se construyó un universo depurado de 294.592 convocatorias en modalidades abiertas a competencia. La unidad de análisis es la convocatoria y no el registro, porque el sistema publica cada fase de un proceso como un registro independiente. Las convocatorias se caracterizaron por segmento UNSPSC, entidad compradora, departamento, modalidad, valor y mes de publicación, y sus condiciones de acceso se compararon según el plazo para ofertar y el número de oferentes.',
+  'Los resultados muestran que el 89,5% de las convocatorias está por debajo del umbral legal mipyme, pero el valor se concentra mucho más que el número de procesos: construcción reúne el 11,7% de las convocatorias y el 34,4% del valor, y Bogotá el 21,5% y el 52,6%, respectivamente. Siete de cada diez oportunidades son de mínima cuantía, con una ventana mediana de cinco días para presentar oferta. La demanda además es estable: cada sector publica en la misma temporada año tras año, y el 83,3% de las entidades que compraron un mismo bien o servicio entre 2022 y 2024 volvió a hacerlo en 2025.',
+  'Se concluye que las oportunidades al alcance de las mipymes son numerosas pero de bajo valor y plazos cortos, y que su regularidad permite anticiparlas. Con esa base se propone una matriz de priorización que indica dónde, cuándo y ante qué entidades participar.',
+];
+const keywords = ['contratación pública', 'mipymes', 'SECOP II', 'datos abiertos', 'oportunidades de mercado', 'Colombia'];
+
+const objetivos = [
+  { k: 'Dónde', t: 'Caracterizar las convocatorias abiertas a competencia según segmento UNSPSC, entidad, territorio, modalidad, tipo de contrato y valor.' },
+  { k: 'Cuándo', t: 'Analizar en qué periodos del año se publican más oportunidades.' },
+  { k: 'Cómo se accede', t: 'Comparar las condiciones de acceso según modalidad, territorio, sector y valor, con el nivel de competencia observado.' },
+  { k: 'A quién', t: 'Diseñar una matriz que permita a las mipymes priorizar dónde, cuándo y ante qué entidades participar.' },
+];
+
+const embudo = [
+  { n: '9.040.457', t: 'registros del conjunto completo', w: 100 },
+  { n: '6.175.404', t: 'publicados entre 2022 y 2025', w: 88 },
+  { n: '563.207', t: 'en modalidades abiertas a competencia', w: 76 },
+  { n: '416.965', t: 'sin registros duplicados', w: 66 },
+  { n: '294.592', t: 'convocatorias, al agrupar las fases', w: 58, last: true },
+];
+
+const kpis = [
+  { v: '89,5%', t: 'de las convocatorias competitivas está bajo el umbral mipyme (US$125.000)' },
+  { v: '5 días', t: 'de plazo mediano en mínima cuantía, que es el 69,5% de las convocatorias' },
+  { v: '52,6%', t: 'del valor se publica en Bogotá, con el 21,5% de las convocatorias' },
+  { v: '92,2%', t: 'de las convocatorias recibe al menos una oferta (mediana: 2 oferentes)' },
+];
+
+const ventanas = [
+  { l: 'Mínima cuantía', n: '204.614', p: '69,5%', p25: 3, d: 5, p75: 7, hi: true },
+  { l: 'Selección abreviada de menor cuantía', n: '38.208', p: '13,0%', p25: 16, d: 20, p75: 25 },
+  { l: 'Subasta inversa', n: '26.777', p: '9,1%', p25: 15, d: 20, p75: 24 },
+  { l: 'Concurso de méritos', n: '10.654', p: '3,6%', p25: 16, d: 21, p75: 28 },
+  { l: 'Licitación pública', n: '7.931', p: '2,7%', p25: 28, d: 33, p75: 40 },
+  { l: 'Licitación pública de obra', n: '5.639', p: '1,9%', p25: 29, d: 35, p75: 45 },
+];
+const vMax = 60;
+
+const concentracion = [
+  { l: 'Bogotá D. C.', c: 21.5, v: 52.6 },
+  { l: 'Servicios de edificación y construcción', c: 11.7, v: 34.4 },
+  { l: 'Las 20 entidades con más valor (de más de 3.000)', c: 9.2, v: 43.8 },
+  { l: 'Servicios de gestión y administración', c: 8.0, v: 5.1 },
+];
+const pct = (x: number) => `${x.toFixed(1).replace('.', ',')}%`;
+
+const temporada = [
+  ['Enero', 6.1, 2.3, 1.8], ['Marzo', 10.5, 8.9, 8.0], ['Octubre', 9.3, 10.2, 13.0], ['Noviembre', 9.0, 11.9, 13.0], ['Diciembre', 6.2, 8.9, 3.4],
+] as const;
+const tMax = 14;
+const mensual = [
+  ['Ene', 27.8, 24.6, 29.9], ['Feb', 77.9, 72.6, 88.8], ['Mar', 105.5, 82.8, 127.1], ['Abr', 102.0, 90.2, 118.2],
+  ['May', 118.4, 114.7, 124.4], ['Jun', 99.5, 91.0, 108.0], ['Jul', 99.8, 86.8, 116.4], ['Ago', 101.6, 94.7, 117.4],
+  ['Sep', 110.2, 100.1, 116.8], ['Oct', 128.0, 112.2, 137.9], ['Nov', 139.7, 131.2, 147.2], ['Dic', 89.6, 77.0, 101.9],
+] as const;
+const mMax = 160;
+const diciembre = [
+  { l: 'Entidades nacionales', v: [55.0, 52.1, 53.8, 53.3] },
+  { l: 'Entidades territoriales', v: [109.1, 97.9, 139.4, 117.3] },
+];
+
+const territorio = [
+  { l: 'Bogotá', d: 13.79 }, { l: 'Risaralda', d: 12.07 }, { l: 'Promedio nacional', d: 11.23, avg: true },
+  { l: 'Antioquia', d: 10.23 }, { l: 'Boyacá', d: 9.43 }, { l: 'Norte de Santander', d: 9.20 },
+  { l: 'Meta', d: 9.01 }, { l: 'Caquetá', d: 8.90 }, { l: 'Casanare', d: 8.88 }, { l: 'Putumayo', d: 8.59 },
+];
+const num = (x: number) => String(x).replace('.', ',');
+
+const conclusiones = [
+  'El 89,5% de las convocatorias competitivas está por debajo del umbral mipyme, mientras que el valor se concentra en Bogotá, en construcción y en pocas entidades.',
+  'El plazo para presentar oferta varía con la modalidad: 5 días típicos en mínima cuantía, frente a 20 a 35 en las demás.',
+  'La publicación sigue un calendario estable entre 2022 y 2025: enero es el mes más bajo todos los años, el pico llega en octubre o noviembre y cada modalidad concentra sus convocatorias en meses distintos.',
+];
+
+const limitaciones = [
+  'Las ofertas registradas miden concurrencia observada en la plataforma, no competencia efectiva.',
+  'Se excluyen del análisis de oferentes los meses con registro incompleto (agosto de 2022 a febrero de 2023 y agosto de 2023).',
+];
+
+const referencias = [
+  'Agencia Nacional de Contratación Pública, Colombia Compra Eficiente [ANCP-CCE]. (2024a). Guía para promover la participación de las mipymes en los procesos de compra y contratación pública (CCE-GAD-GI-26). https://operaciones.colombiacompra.gov.co/sites/cce_public/files/cce_documents/guia_para_promover_la_participacion_de_las_mipymes_en_los_procesos_de_compra_publica_cce-gad-gi-26_1.pdf',
+  'Agencia Nacional de Contratación Pública, Colombia Compra Eficiente [ANCP-CCE]. (2024b). Informe de gestión institucional 2023 (CCE-DES-FM-29). https://operaciones.colombiacompra.gov.co/sites/cce_public/files/files_2020/31_01_2024_cce-des-fm-29_formato_informe_de_gestion_cce_ajustado_1_0.pdf',
+  'Agencia Nacional de Contratación Pública, Colombia Compra Eficiente [ANCP-CCE]. (2026). SECOP II: Procesos de contratación [Conjunto de datos p6dx-8zbt]. Datos Abiertos Colombia. Consultado el 22 de agosto de 2026. https://www.datos.gov.co/d/p6dx-8zbt',
+  'Flynn, A. (2026). Research on SME involvement in public procurement: A review, critique and conceptual framework. Journal of Purchasing and Supply Management, 32(2), 101052. https://doi.org/10.1016/j.pursup.2025.101052',
+  'Ministerio de Comercio, Industria y Turismo [MinCIT]. (2022, 25 de junio). Mincomercio se une a la celebración del Día de las Mipymes. https://www.mincit.gov.co/prensa/noticias/industria/celebracion-del-dia-de-las-mipymes',
+  'Organización para la Cooperación y el Desarrollo Económicos [OCDE]. (2018). SMEs in public procurement: Practices and strategies for shared benefits. OECD Publishing. https://doi.org/10.1787/9789264307476-en',
+];
+
+const cita = `Uribe Holguin, J. L., & Velázquez Espinoza, N. (2026, 29 de octubre). ${title} [Póster]. V Encuentro Interinstitucional de Semilleros de Investigación, Universidad Ean, Bogotá, Colombia.`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  headline: title,
+  inLanguage: 'es',
+  datePublished: '2026-10-29',
+  author: [
+    { '@type': 'Person', name: 'Jose Luis Uribe Holguin', identifier: 'https://orcid.org/0009-0005-9752-6766', url: site.url },
+    { '@type': 'Person', name: 'Noé Velázquez Espinoza', identifier: 'https://orcid.org/0000-0002-7768-2279' },
+  ],
+  publisher: { '@type': 'CollegeOrUniversity', name: 'Universidad Ean' },
+  keywords: keywords.join(', '),
+};
+
+const h2 = 'font-res-display text-[13px] font-extrabold uppercase tracking-[0.12em] text-res-teal';
+---
+<Base locale="es" title={pageTitle} description={description} alternates={{ es: '/investigacion/secop-mipymes' }} noindex bare {jsonLd}>
+  <div class="res font-res-sans text-res-ink">
+
+    <header class="border-b-4 border-res-teal">
+      <div class="mx-auto max-w-[1080px] px-5 pb-10 pt-8 sm:px-8 sm:pt-12">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="rounded-full bg-res-teal px-3.5 py-1.5 text-[13px] font-extrabold tracking-[0.08em] text-res-paper">V EISI 2026</span>
+          <span class="rounded-full border-2 border-res-line px-3.5 py-1 text-[13px] font-bold text-res-teal">Póster · Mesa 5, Gestión, gerencia y emprendimiento</span>
+        </div>
+        <h1 class="mt-6 font-res-display text-[28px] font-extrabold leading-[1.1] tracking-[-0.02em] sm:text-[40px]">{title}</h1>
+        <p class="mt-5 text-[19px] font-bold text-res-teal sm:text-[21px]">Jose Luis Uribe Holguin · Noé Velázquez Espinoza</p>
+        <p class="mt-1.5 text-[15px] leading-relaxed text-res-mut sm:text-base">Universidad Ean, Facultad de Administración de Empresas · Semillero MindLab, Laboratorio Empresarial: Estrategia e Innovación · Bogotá, 29 de octubre de 2026</p>
+      </div>
+    </header>
+
+    <section class="mx-auto max-w-[1080px] px-5 pt-10 sm:px-8 sm:pt-14">
+      <div class="rounded-[20px] bg-res-teal px-6 py-9 text-res-paper sm:px-12 sm:py-14">
+        <p class="text-[13px] font-extrabold uppercase tracking-[0.12em] opacity-80">Hallazgo principal · Compras públicas en Colombia, SECOP II 2022-2025</p>
+        <p class="mt-4 font-res-display tracking-[-0.03em] text-[50px] font-bold leading-[0.95] sm:text-[110px]">7 de cada 10</p>
+        <p class="mt-2 text-[22px] font-bold leading-tight sm:text-[32px]">convocatorias públicas abiertas a competencia son de mínima cuantía, con un plazo típico de</p>
+        <p class="mt-1 font-res-display tracking-[-0.03em] text-[50px] font-bold leading-none text-res-peach sm:text-[110px]">5 días</p>
+        <p class="mt-2 text-[22px] font-bold leading-tight sm:text-[32px]">para presentar oferta.</p>
+        <p class="mt-4 max-w-[760px] text-[15px] leading-relaxed opacity-85 sm:text-base">Mínima cuantía: la modalidad para las compras de menor valor de cada entidad pública, hasta el 10% de su menor cuantía (máximo 100 SMMLV).</p>
+        <div class="mt-8 flex flex-col gap-4 rounded-2xl bg-res-paper/10 p-4 sm:p-6">
+          <p class="text-sm font-bold opacity-85 sm:text-base">Días entre la publicación y el cierre de ofertas (mediana). Cada cuadro es un día.</p>
+          {[{ l: 'Mínima cuantía', d: 5, hi: true }, { l: 'Licitación pública', d: 33, hi: false }].map((t) => (
+            <div>
+              <p class="flex justify-between text-[15px] font-bold sm:text-lg"><span>{t.l}</span><span class:list={[t.hi && 'text-res-peach']}>{t.d} días</span></p>
+              <div class="mt-1.5 grid grid-cols-[repeat(35,minmax(0,1fr))] gap-[2px] sm:gap-1" aria-hidden="true">
+                {Array.from({ length: 35 }, (_, i) => <span class:list={['h-4 rounded-[2px] sm:h-6', i < t.d ? (t.hi ? 'bg-res-peach' : 'bg-res-paper') : 'bg-res-paper/15']}></span>)}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="mt-6 max-w-[760px] text-[17px] leading-relaxed opacity-90 sm:text-lg">La mínima cuantía reúne el 69,5% de las 294.592 convocatorias competitivas publicadas en el SECOP II entre 2022 y 2025. Una de cada cuatro da 3 días o menos.</p>
+        
+      </div>
+    </section>
+
+    <nav aria-label="En esta página" class="mx-auto max-w-[1080px] px-5 pt-8 sm:px-8">
+      <ul class="flex flex-wrap gap-2 text-[15px] font-semibold">
+        {[['#resumen', 'Resumen'], ['#metodo', 'Método'], ['#resultados', 'Resultados'], ['#conclusiones', 'Conclusiones'], ['#referencias', 'Referencias']].map(([href, label]) => (
+          <li><a href={href} class="inline-block rounded-full border-2 border-res-line px-4 py-2 text-res-teal transition hover:border-res-teal">{label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <article class="mx-auto flex max-w-[1080px] flex-col gap-16 px-5 py-14 sm:gap-20 sm:px-8">
+
+      <section id="resumen" class="grid gap-8 md:grid-cols-[1fr_300px]">
+        <div>
+          <h2 class={h2}>Resumen</h2>
+          <div class="mt-4 flex flex-col gap-4 text-[17px] leading-[1.65] sm:text-lg">
+            {resumen.map((p) => <p>{p}</p>)}
+          </div>
+          <ul class="mt-6 flex flex-wrap gap-2" aria-label="Palabras clave">
+            {keywords.map((k) => <li class="rounded-full bg-res-teal-soft px-3 py-1.5 text-sm font-semibold text-res-teal-deep">{k}</li>)}
+          </ul>
+        </div>
+        <aside class="flex flex-col gap-5 self-start rounded-2xl bg-res-mist p-6">
+          <h2 class={h2}>Pregunta</h2>
+          <p class="text-[17px] leading-relaxed">¿En qué segmentos, territorios y entidades, y en qué momentos del año, aparecen las convocatorias de tamaño accesible para las mipymes, con qué nivel de competencia, y qué tan estables son esos patrones?</p>
+          <h2 class={h2}>Objetivos</h2>
+          <ol class="flex flex-col gap-3.5">
+            {objetivos.map((o, i) => (
+              <li class="flex gap-3">
+                <span class="flex size-7 flex-none items-center justify-center rounded-full bg-res-teal text-sm font-extrabold text-res-paper">{i + 1}</span>
+                <span class="text-[15px] leading-snug"><b>{o.k}.</b> {o.t}</span>
+              </li>
+            ))}
+          </ol>
+        </aside>
+      </section>
+
+      <section id="metodo">
+        <h2 class={h2}>Método</h2>
+        <p class="mt-4 max-w-[760px] text-[17px] leading-relaxed sm:text-lg">Estudio cuantitativo y descriptivo sobre fuente secundaria: los datos abiertos del SECOP II (datos.gov.co, conjunto <code class="rounded bg-res-mist px-1.5 py-0.5 text-[0.9em]">p6dx-8zbt</code>, consultado el 22 de agosto de 2026; ANCP-CCE, 2026). La unidad de análisis es la <b>convocatoria</b>: el sistema publica cada fase de un proceso como un registro aparte, y el 29,4% de los registros eran fase de otro.</p>
+        <ol class="mt-8 flex flex-col gap-2">
+          {embudo.map((e) => (
+            <li class:list={['flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 rounded-lg px-4 py-3', e.last ? 'bg-res-teal text-res-paper' : 'bg-res-teal-soft']} style={`width:${e.w}%; min-width:260px`}>
+              <span class="text-[22px] font-extrabold sm:text-[26px]">{e.n}</span>
+              <span class="text-sm font-semibold sm:text-[15px]">{e.t}</span>
+            </li>
+          ))}
+        </ol>
+        <p class="mt-6 max-w-[760px] text-base leading-relaxed text-res-mut">Variables: segmento UNSPSC, entidad compradora, departamento, modalidad, tipo de contrato, valor, fechas de publicación y cierre, y oferentes por convocatoria (Proponentes por Proceso, datos.gov.co). Análisis: concentración en número y en valor, distribución mensual de la publicación y ventana para ofertar con regresión de controles.</p>
+      </section>
+
+      <section id="resultados" class="flex flex-col gap-12">
+        <h2 class={h2}>Resultados</h2>
+        <ul class="-mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {kpis.map((k) => (
+            <li class="rounded-2xl bg-res-teal p-5 text-res-paper">
+              <p class="font-res-display tracking-[-0.03em] text-[44px] font-bold leading-none">{k.v}</p>
+              <p class="mt-2 text-[15px] leading-snug">{k.t}</p>
+            </li>
+          ))}
+        </ul>
+
+        <figure>
+          <h3 class="font-res-display text-[22px] font-extrabold tracking-normal sm:text-2xl">El plazo cambia con la modalidad</h3>
+          <figcaption class="mt-1 text-[15px] text-res-mut">Días entre la publicación y el cierre de ofertas. La barra va del percentil 25 al 75; el número es la mediana.</figcaption>
+          <ul class="mt-6 flex flex-col gap-4">
+            {ventanas.map((v) => (
+              <li class="grid gap-1.5 sm:grid-cols-[300px_1fr] sm:items-center sm:gap-5">
+                <span class="text-[15px] font-semibold leading-tight">{v.l} <span class="font-normal text-res-soft">· {v.p} ({v.n})</span></span>
+                <span class="relative block h-8">
+                  <span class="absolute inset-y-0 left-0 right-0 rounded bg-res-mist"></span>
+                  <span class:list={['absolute inset-y-0 rounded', v.hi ? 'bg-res-orange' : 'bg-res-teal']} style={`left:${(v.p25 / vMax) * 100}%; width:${((v.p75 - v.p25) / vMax) * 100}%`}></span>
+                  <span class="absolute top-1/2 -translate-y-1/2 pl-2 text-base font-extrabold" style={`left:${(v.p75 / vMax) * 100}%`}>{v.d} días</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          
+        </figure>
+
+        <figure>
+          <h3 class="font-res-display text-[22px] font-extrabold tracking-normal sm:text-2xl">Un calendario que se repite cada año</h3>
+          <figcaption class="mt-1 max-w-[760px] text-[15px] text-res-mut">Índice mensual de publicación (100 = mes promedio del año). La barra es el promedio 2022-2025; la línea negra va del mínimo al máximo de los cuatro años.</figcaption>
+          <div class="relative mt-6 flex h-[240px] items-end gap-1 border-b-2 border-res-ink sm:gap-2">
+            <span class="absolute inset-x-0 border-t-2 border-dashed border-res-grey" style={`bottom:${(100 / mMax) * 100}%`}></span>
+            {mensual.map(([m, v, lo, hi]) => (
+              <span class="relative flex h-full flex-1 flex-col items-center justify-end">
+                <span class:list={['w-full rounded-t-sm', v >= 120 ? 'bg-res-orange' : v <= 80 ? 'bg-res-grey' : 'bg-res-teal']} style={`height:${(v / mMax) * 100}%`} title={`${m}: ${v} (entre ${lo} y ${hi})`}></span>
+                <span class="absolute left-1/2 w-0.5 -translate-x-1/2 bg-res-ink" style={`bottom:${(lo / mMax) * 100}%; height:${((hi - lo) / mMax) * 100}%`}></span>
+              </span>
+            ))}
+          </div>
+          <div class="mt-1.5 flex gap-1 sm:gap-2">
+            {mensual.map(([m]) => <span class="flex-1 text-center text-[11px] font-bold sm:text-xs">{m}</span>)}
+          </div>
+          <p class="mt-5 max-w-[760px] text-base leading-relaxed text-res-mut">Enero queda entre 25 y 30 todos los años. El pico es noviembre (entre 131 y 147), salvo en 2025, cuando fue octubre.</p>
+        </figure>
+
+        <div class="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-2">
+          <figure>
+            <h3 class="font-res-display text-[22px] font-extrabold tracking-normal sm:text-2xl">El número de convocatorias no es el valor</h3>
+            <figcaption class="mt-1 flex flex-wrap gap-x-5 gap-y-1 text-[15px] text-res-mut">
+              <span class="inline-flex items-center gap-2"><span class="size-3.5 rounded-sm bg-res-teal"></span>% de convocatorias</span>
+              <span class="inline-flex items-center gap-2"><span class="size-3.5 rounded-sm bg-res-orange"></span>% del valor</span>
+            </figcaption>
+            <ul class="mt-6 flex flex-col gap-5">
+              {concentracion.map((c) => (
+                <li>
+                  <p class="text-[15px] font-bold">{c.l}</p>
+                  <p class="mt-1.5 flex items-center gap-2"><span class="h-4 rounded-sm bg-res-teal" style={`width:${(c.c / 55) * 85}%`}></span><span class="text-sm font-extrabold text-res-teal">{pct(c.c)}</span></p>
+                  <p class="mt-1 flex items-center gap-2"><span class="h-4 rounded-sm bg-res-orange" style={`width:${(c.v / 55) * 85}%`}></span><span class="text-sm font-extrabold text-res-orange-ink">{pct(c.v)}</span></p>
+                </li>
+              ))}
+            </ul>
+          </figure>
+
+          <figure>
+            <h3 class="font-res-display text-[22px] font-extrabold tracking-normal sm:text-2xl">Cada modalidad tiene su temporada</h3>
+            <figcaption class="mt-1 text-[15px] text-res-mut">% de las convocatorias de cada modalidad publicado en el mes, 2022-2025.</figcaption>
+            <p class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[15px] text-res-mut">
+              <span class="inline-flex items-center gap-2"><span class="size-3.5 rounded-sm bg-res-teal"></span>Licitación pública</span>
+              <span class="inline-flex items-center gap-2"><span class="size-3.5 rounded-sm bg-res-orange"></span>Mínima cuantía</span>
+              <span class="inline-flex items-center gap-2"><span class="size-3.5 rounded-sm bg-res-grey"></span>Subasta inversa</span>
+            </p>
+            <div class="mt-4 flex h-[200px] items-end gap-3 border-b-2 border-res-ink sm:gap-5">
+              {temporada.map(([, a, b, c]) => (
+                <span class="flex h-full flex-1 items-end gap-0.5 sm:gap-1">
+                  {([[a, 'bg-res-teal'], [b, 'bg-res-orange'], [c, 'bg-res-grey']] as const).map(([v, cls]) => (
+                    <span class="flex h-full flex-1 flex-col items-center justify-end gap-1">
+                      <span class="text-[10px] font-bold sm:text-xs">{v.toFixed(1).replace('.', ',')}</span>
+                      <span class:list={['w-full rounded-t-sm', cls]} style={`height:${(v / tMax) * 100}%`}></span>
+                    </span>
+                  ))}
+                </span>
+              ))}
+            </div>
+            <div class="mt-1.5 flex gap-3 sm:gap-5">
+              {temporada.map(([m]) => <span class="flex-1 text-center text-xs font-bold sm:text-sm">{m}</span>)}
+            </div>
+            <div class="mt-6 overflow-x-auto rounded-xl border-2 border-res-line">
+              <table class="w-full min-w-[420px] text-left text-sm">
+                <caption class="px-4 pb-1 pt-3 text-left text-sm font-bold text-res-mut">Índice de diciembre (100 = mes promedio del año)</caption>
+                <thead class="text-xs uppercase tracking-[0.06em] text-res-soft"><tr><th class="px-4 py-2">Orden</th><th class="px-3 py-2 text-right">2022</th><th class="px-3 py-2 text-right">2023</th><th class="px-3 py-2 text-right">2024</th><th class="px-3 py-2 text-right">2025</th></tr></thead>
+                <tbody>{diciembre.map((r) => <tr class="border-t border-res-line"><td class="px-4 py-2 font-semibold">{r.l}</td>{r.v.map((v) => <td class="px-3 py-2 text-right tabular-nums">{v.toFixed(1).replace('.', ',')}</td>)}</tr>)}</tbody>
+              </table>
+            </div>
+          </figure>
+        </div>
+
+        <figure>
+          <h3 class="font-res-display text-[22px] font-extrabold tracking-normal sm:text-2xl">El plazo también varía entre departamentos</h3>
+          <figcaption class="mt-1 text-[15px] text-res-mut">Ventana media en días, estandarizada a la mezcla nacional de modalidad y valor.</figcaption>
+          <ul class="mt-6 grid gap-2.5 sm:grid-flow-col sm:grid-rows-5 sm:gap-x-10">
+            {territorio.map((d) => (
+              <li class="grid grid-cols-[150px_1fr] items-center gap-3">
+                <span class:list={['text-[15px]', d.avg ? 'font-extrabold text-res-teal' : 'font-semibold']}>{d.l}</span>
+                <span class="flex items-center gap-2"><span class:list={['h-5 rounded-sm', d.avg ? 'bg-res-grey' : 'bg-res-teal']} style={`width:${(d.d / 14) * 80}%`}></span><span class="text-sm font-extrabold">{num(d.d)}</span></span>
+              </li>
+            ))}
+          </ul>
+          <p class="mt-5 max-w-[760px] text-base leading-relaxed text-res-mut">Con controles de valor, modalidad, sector y año (R² = 0,647, n = 285.183), Bogotá da 3,56 días más que el promedio de los demás departamentos.</p>
+        </figure>
+      </section>
+
+      
+
+      <section id="conclusiones" class="grid gap-10 md:grid-cols-[1fr_320px]">
+        <div>
+          <h2 class={h2}>Conclusiones</h2>
+          <ol class="mt-5 flex flex-col gap-5">
+            {conclusiones.map((c, i) => (
+              <li class="flex gap-4">
+                <span class="font-res-display tracking-[-0.03em] text-4xl font-bold leading-none text-res-orange">{i + 1}</span>
+                <p class="text-[17px] leading-relaxed sm:text-lg">{c}</p>
+              </li>
+            ))}
+          </ol>
+          <p class="mt-8 text-base leading-relaxed text-res-mut"><b class="text-res-ink">Trabajo futuro.</b> Estudiar qué tanto aprovechan las mipymes estas convocatorias, cruzando los datos con las empresas adjudicatarias, y revisar los requisitos habilitantes en una muestra de pliegos.</p>
+        </div>
+        <aside class="self-start rounded-2xl border-2 border-res-line p-6">
+          <h2 class={h2}>Limitaciones</h2>
+          <ul class="mt-4 flex list-disc flex-col gap-3 pl-5 text-[15px] leading-snug">
+            {limitaciones.map((l) => <li>{l}</li>)}
+          </ul>
+        </aside>
+      </section>
+
+      <section id="referencias">
+        <h2 class={h2}>Referencias</h2>
+        <ol class="mt-5 flex flex-col gap-3">
+          {referencias.map((r) => <li class="break-words pl-6 -indent-6 text-[15px] leading-relaxed text-res-mut">{r}</li>)}
+        </ol>
+      </section>
+
+      <section class="grid gap-6 rounded-2xl bg-res-teal-soft p-6 sm:p-8 md:grid-cols-2">
+        <div>
+          <h2 class={h2}>Cómo citar</h2>
+          <p class="mt-3 text-[15px] leading-relaxed">{cita}</p>
+        </div>
+        <div>
+          <h2 class={h2}>Contacto</h2>
+          <p class="mt-3 text-[15px] leading-relaxed">Jose Luis Uribe Holguin · <a class="font-semibold text-res-teal-deep underline underline-offset-4" href="mailto:juribeh75712@universidadean.edu.co">juribeh75712@universidadean.edu.co</a> · ORCID <a class="font-semibold text-res-teal-deep underline underline-offset-4" href="https://orcid.org/0009-0005-9752-6766">0009-0005-9752-6766</a></p>
+          <p class="mt-2 text-[15px] leading-relaxed">Noé Velázquez Espinoza · <a class="font-semibold text-res-teal-deep underline underline-offset-4" href="mailto:nvelazquez@universidadean.edu.co">nvelazquez@universidadean.edu.co</a> · ORCID <a class="font-semibold text-res-teal-deep underline underline-offset-4" href="https://orcid.org/0000-0002-7768-2279">0000-0002-7768-2279</a></p>
+        </div>
+      </section>
+    </article>
+
+    <footer class="border-t-2 border-res-line">
+      <div class="mx-auto flex max-w-[1080px] flex-wrap items-center justify-between gap-3 px-5 py-6 text-sm text-res-mut sm:px-8">
+        <span>Datos: SECOP II, Colombia Compra Eficiente, datos.gov.co. Elaboración propia.</span>
+        <a href="/" class="font-semibold text-res-teal-deep hover:underline">joseuribe.dev</a>
+      </div>
+    </footer>
+  </div>
+</Base>
+
+<style is:global>
+  /* Base paints the dark site ground; this page reads as the printed poster. */
+  html:has(.res) { color-scheme: light; }
+  body:has(.res) { background: var(--color-res-paper); color: var(--color-res-ink); }
+  .res ::selection { background: var(--color-res-teal); color: var(--color-res-paper); }
+  .res a:focus-visible { outline-color: var(--color-res-teal); }
+</style>

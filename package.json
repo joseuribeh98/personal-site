@@ -17,9 +17,11 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
     "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/geist": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/schibsted-grotesk": "^5.3.0",
     "@portabletext/to-html": "^6.0.0",
     "@sanity/astro": "^3.5.1",
     "@sanity/client": "^8.9.0",
