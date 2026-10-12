@@ -35,7 +35,8 @@ export default defineConfig({
       // Studio is standalone in ../studio-personal-site — never embedded here
     }),
     sitemap({
-      filter: (page) => !/\/404\/?$/.test(page),
+      // /investigacion/* is reached by QR from printed posters, not from the site nav.
+      filter: (page) => !/\/404\/?$/.test(page) && !/\/investigacion\//.test(page),
       i18n: {
         defaultLocale: 'es',
         locales: { es: 'es', en: 'en', pt: 'pt-BR' },

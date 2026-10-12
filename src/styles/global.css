@@ -34,6 +34,25 @@
   --text-display-md: clamp(1.5rem, 2.4vw, 2.25rem);
 
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Research pages (/investigacion/*): light palette matched to the printed poster.
+     Only those views use these tokens; the rest of the site stays dark. */
+  --color-res-paper: #ffffff;
+  --color-res-mist: #f4f8f7;
+  --color-res-ink: #18262b;
+  --color-res-mut: #4a5a60;
+  --color-res-soft: #6a7a80;
+  --color-res-line: #cfe3e0;
+  --color-res-teal: #0e6f68;
+  --color-res-teal-deep: #09514c;
+  --color-res-teal-soft: #e6f2f0;
+  --color-res-orange: #d9692b;
+  --color-res-orange-ink: #b4521b;
+  --color-res-orange-soft: #fcefe6;
+  --color-res-peach: #ffb48a;
+  --color-res-grey: #9aaab0;
+  --font-res-sans: 'Atkinson Hyperlegible Next Variable', 'Helvetica Neue', Arial, sans-serif;
+  --font-res-display: 'Schibsted Grotesk Variable', 'Helvetica Neue', Arial, sans-serif;
 }
 
 @layer base {
