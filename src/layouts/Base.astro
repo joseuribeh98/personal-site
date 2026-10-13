@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 import { LOCALES, DEFAULT_LOCALE, LANG_TAGS, localizePath, stripLocale, t, type Locale } from '../i18n/ui';
 import { site } from '../config/site';
 import Header from '../components/Header.astro';
@@ -19,13 +20,15 @@ interface Props {
   description: string;
   alternates?: Partial<Record<Locale, string>>;
   ogImage?: string;
+  /** `article` for blog posts and research pages; everything else is a `website`. */
+  ogType?: 'website' | 'article';
   noindex?: boolean;
   jsonLd?: object | object[];
   fallbackPath?: string;
   /** Skip the site header and footer (standalone pages such as /investigacion/*). */
   bare?: boolean;
 }
-const { locale, title, description: rawDescription, alternates, ogImage = `/og-${locale}.png`, noindex = false, jsonLd, fallbackPath, bare = false } = Astro.props;
+const { locale, title, description: rawDescription, alternates, ogImage = `/og-${locale}.png`, ogType = 'website', noindex = false, jsonLd, fallbackPath, bare = false } = Astro.props;
 
 const tr = t(locale);
 const description = metaDescription(rawDescription);
@@ -53,7 +56,7 @@ const ga4 = site.ga4Id;
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="author" content={site.name} />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content={ogLocale} />
     <meta property="og:title" content={title} />
@@ -105,6 +108,7 @@ const ga4 = site.ga4Id;
     </main>
     {!bare && <Footer {locale} />}
     <Analytics />
+    <SpeedInsights />
     <script>
       import '../scripts/events.ts';
     </script>
