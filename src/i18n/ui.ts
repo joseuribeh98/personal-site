@@ -151,6 +151,15 @@ const en = {
 
   'blog.back': 'All posts',
   'blog.alsoIn': 'Also available in',
+  'blog.tags': 'Tags',
+  'tag.ia': 'AI',
+  'tag.agentes': 'Agents',
+  'tag.desarrollo-web': 'Web development',
+  'tag.producto': 'Product',
+  'tag.negocio': 'Business',
+  'tag.diseno': 'Design',
+  'tag.herramientas': 'Tools',
+  'tag.datos': 'Data',
 
   'contact.title': 'Contact',
   'contact.lead': "Tell me what you want to get off the ground. I reply within one business day.",
@@ -316,6 +325,15 @@ const es: Record<UiKey, string> = {
 
   'blog.back': 'Todos los artículos',
   'blog.alsoIn': 'También disponible en',
+  'blog.tags': 'Etiquetas',
+  'tag.ia': 'Inteligencia artificial',
+  'tag.agentes': 'Agentes',
+  'tag.desarrollo-web': 'Desarrollo web',
+  'tag.producto': 'Producto',
+  'tag.negocio': 'Negocio',
+  'tag.diseno': 'Diseño',
+  'tag.herramientas': 'Herramientas',
+  'tag.datos': 'Datos',
 
   'contact.title': 'Contacto',
   'contact.lead': "Cuéntame qué quieres sacar adelante. Respondo en un día hábil.",
@@ -479,6 +497,15 @@ const pt: Record<UiKey, string> = {
 
   'blog.back': 'Todos os artigos',
   'blog.alsoIn': 'Também disponível em',
+  'blog.tags': 'Tags',
+  'tag.ia': 'Inteligência artificial',
+  'tag.agentes': 'Agentes',
+  'tag.desarrollo-web': 'Desenvolvimento web',
+  'tag.producto': 'Produto',
+  'tag.negocio': 'Negócios',
+  'tag.diseno': 'Design',
+  'tag.herramientas': 'Ferramentas',
+  'tag.datos': 'Dados',
 
   'contact.title': 'Contato',
   'contact.lead': "Me conta o que você quer tirar do papel. Respondo em um dia útil.",
