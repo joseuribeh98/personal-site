@@ -4,6 +4,7 @@ import ServiceIcon from '../components/ServiceIcon.astro';
 import ContactBlock from '../components/ContactBlock.astro';
 import { t, localizePath, type Locale, type UiKey } from '../i18n/ui';
 import { getProjects, getCaseStudySlugs } from '../lib/sanity';
+import { professionalServiceJsonLd } from '../lib/seo';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
@@ -32,7 +33,7 @@ const services = ([1, 2, 3] as const).map((n) => ({
 }));
 const steps = [1, 2, 3, 4].map((n) => [tr(`home.flow.s${n}.title` as UiKey), tr(`services.process.s${n}` as UiKey)]);
 ---
-<Base {locale} title={tr('services.metaTitle')} description={tr('services.metaDescription')}>
+<Base {locale} title={tr('services.metaTitle')} description={tr('services.metaDescription')} jsonLd={professionalServiceJsonLd(locale, tr('services.metaDescription'), services.map((s) => ({ name: s.title, description: s.text })))}>
   <section class="wrap flex flex-col gap-7 pt-14 pb-20 md:pt-20">
     <h1 class="rise-1 text-display-xl leading-none tracking-[-0.04em]">{tr('services.title')}</h1>
     <p class="fade-2 max-w-[620px] text-[19px] text-ink-mut text-pretty">{tr('services.lead')}</p>

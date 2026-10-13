@@ -7,7 +7,7 @@ import ServiceIcon from '../components/ServiceIcon.astro';
 import { t, localizePath, type Locale, type UiKey } from '../i18n/ui';
 import type { Project } from '../lib/content';
 import { getProjects, getCaseStudySlugs, getPosts, urlFor } from '../lib/sanity';
-import { personJsonLd, websiteJsonLd } from '../lib/seo';
+import { personJsonLd, websiteJsonLd, professionalServiceJsonLd } from '../lib/seo';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
@@ -34,8 +34,9 @@ const srcset = (p: Project, ratio: number, widths: number[]) =>
 const stack = [tr('home.marquee.product'), 'Next.js', tr('home.marquee.scope'), 'NestJS', tr('home.marquee.zero'), 'PostgreSQL', tr('home.marquee.launch'), 'Azure', tr('home.marquee.metrics'), 'Astro', tr('home.marquee.ai')];
 const flow = [1, 2, 3, 4].map((n) => [tr(`home.flow.s${n}.title` as UiKey), tr(`home.flow.s${n}.text` as UiKey)]);
 const arrow = 'M5 12h14M13 6l6 6-6 6';
+const business = professionalServiceJsonLd(locale, tr('services.metaDescription'), [1, 2, 3].map((n) => ({ name: tr(`home.s${n}.title` as UiKey), description: tr(`home.s${n}.text` as UiKey) })));
 ---
-<Base {locale} title={tr('home.metaTitle')} description={tr('home.metaDescription')} jsonLd={[personJsonLd(), websiteJsonLd(locale)]}>
+<Base {locale} title={tr('home.metaTitle')} description={tr('home.metaDescription')} jsonLd={[personJsonLd(), websiteJsonLd(locale), business]}>
   <!-- Hero -->
   <section class="wrap grid items-end gap-x-14 gap-y-10 pt-10 pb-20 lg:grid-cols-2">
     <div class="flex min-w-0 flex-col gap-9 pb-6">
