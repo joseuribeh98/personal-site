@@ -18,7 +18,7 @@ const date = new Date(post.publishedAt).toLocaleDateString(LANG_TAGS[locale], { 
 // generated title card (src/pages/og/blog/[locale]/[slug].png.ts), never the site-wide image.
 const og = post.cover ? urlFor(post.cover).width(1200).height(630).fit('crop').url() : `/og/blog/${locale}/${post.slug}.png`;
 ---
-<Base {locale} title={`${post.title} — Jose Uribe`} description={post.excerpt} {alternates} ogImage={og} ogType="article" jsonLd={articleJsonLd(post, locale)} fallbackPath="/blog">
+<Base {locale} title={`${post.title} — Jose Uribe`} description={post.excerpt} {alternates} ogImage={og} ogType="article" jsonLd={articleJsonLd(post, locale, og)} fallbackPath="/blog">
   <article class="wrap max-w-[860px] pt-10 pb-24 md:pt-14">
     <a href={localizePath('/blog', locale)} class="inline-flex items-center gap-2 text-[15px] font-semibold text-ink-mut hover:text-accent">
       <svg class="rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>{tr('blog.back')}
