@@ -79,11 +79,18 @@
   .card .img { transition: transform 0.6s var(--ease-out-soft); }
   .card:hover .img { transform: scale(1.04); }
   .prose-site { @apply max-w-prose text-lg leading-relaxed text-ink-2; }
-  .prose-site p + p { @apply mt-5; }
-  .prose-site h2 { @apply mt-12 mb-4 text-display-md; }
-  .prose-site h3 { @apply mt-8 mb-3 text-xl; }
+  /* Flow spacing: every block gets the same gap from the one before it, whatever its type.
+     The old `p + p` rule left a paragraph glued to a list above it. */
+  .prose-site > * + * { @apply mt-5; }
+  .prose-site > h2 { @apply mt-14 text-display-md; }
+  .prose-site > h3 { @apply mt-10 text-xl; }
+  .prose-site > h2 + *, .prose-site > h3 + * { @apply mt-4; }
   .prose-site a { @apply text-accent underline underline-offset-4 hover:text-accent-hover; }
-  .prose-site ul { @apply my-5 list-disc pl-6; }
+  .prose-site ul { @apply list-disc pl-6; }
+  .prose-site ol { @apply list-decimal pl-6; }
+  .prose-site li + li { @apply mt-3; }
+  .prose-site li { @apply pl-1; }
+  .prose-site li::marker { @apply text-ink-mut; }
   .prose-site pre { @apply my-6 overflow-x-auto rounded-lg border border-line bg-paper-pure p-4 text-sm; }
   .prose-site code:not(pre code) { @apply rounded bg-paper-2 px-1.5 py-0.5 text-[0.9em]; }
   .prose-site img { @apply my-8 rounded-lg; }
