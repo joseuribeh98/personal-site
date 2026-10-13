@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { otherTranslations, PROJECTS_QUERY, POSTS_QUERY, type Post } from './content';
 
 const post = (language: 'en' | 'es' | 'pt', translations: Post['translations']): Post =>
-  ({ _id: 'x', title: 't', slug: 's', language, excerpt: '', body: [], publishedAt: '', translations }) as Post;
+  ({ _id: 'x', title: 't', slug: 's', language, excerpt: '', body: [], publishedAt: '', tags: [], translations }) as Post;
 
 describe('otherTranslations', () => {
   it('drops the current language and unpublished translations', () => {

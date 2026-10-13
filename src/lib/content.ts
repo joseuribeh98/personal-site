@@ -36,6 +36,8 @@ export type Post = {
   body: unknown[];
   cover?: SanityImage;
   publishedAt: string;
+  /** Closed catalog defined in the Studio (POST_TAG_OPTIONS); labels live in i18n as `tag.<value>`. */
+  tags: string[];
   /** Every language version linked by translation.metadata, including this document's own. */
   translations: PostTranslation[];
 };
@@ -66,9 +68,9 @@ export const PROJECT_SLUGS_WITH_CASE_QUERY = `*[_type == "project" && !(_id in p
 // Translations come from the @sanity/document-internationalization metadata document.
 // `value->slug.current` is null for translations that exist only as drafts.
 const POST_FIELDS = `
-  _id, title, "slug": slug.current, language, excerpt, body, cover, publishedAt,
+  _id, title, "slug": slug.current, language, excerpt, body, cover, publishedAt, "tags": coalesce(tags, []),
   "translations": coalesce(
-    *[_type == "translation.metadata" && references(^._id)][0].translations[] { "language": _key, "slug": value->slug.current },
+    *[_type == "translation.metadata" && references(^._id)][0].translations[] { "language": coalesce(language, _key), "slug": value->slug.current },
     []
   )
 `;

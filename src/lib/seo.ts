@@ -110,6 +110,7 @@ export function articleJsonLd(post: Post, locale: Locale, image?: string) {
     ...(image ? { image: new URL(image, site.url).href } : {}),
     author: { '@type': 'Person', '@id': PERSON_ID, name: site.name, url: site.url },
     publisher: { '@type': 'Person', '@id': PERSON_ID, name: site.name, url: site.url },
+    ...(post.tags?.length ? { keywords: post.tags.join(', ') } : {}),
     ...(citation.length ? { citation } : {}),
   };
 }
