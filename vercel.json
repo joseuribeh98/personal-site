@@ -9,6 +9,36 @@
       "source": "/es/:path*",
       "destination": "/:path*",
       "permanent": true
+    },
+    {
+      "source": "/work/armony",
+      "destination": "/work",
+      "permanent": true
+    },
+    {
+      "source": "/work/enlace",
+      "destination": "/work",
+      "permanent": true
+    },
+    {
+      "source": "/en/work/armony",
+      "destination": "/en/work",
+      "permanent": true
+    },
+    {
+      "source": "/en/work/enlace",
+      "destination": "/en/work",
+      "permanent": true
+    },
+    {
+      "source": "/pt/work/armony",
+      "destination": "/pt/work",
+      "permanent": true
+    },
+    {
+      "source": "/pt/work/enlace",
+      "destination": "/pt/work",
+      "permanent": true
     }
   ],
   "headers": [
