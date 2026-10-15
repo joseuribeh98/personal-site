@@ -17,6 +17,8 @@ describe('links', () => {
     expect(html).toContain('rel="noopener"');
     expect(html).toContain('data-source="arxiv.org"');
     expect(html).toContain('<span class="sr-only"> (abre en una pestaña nueva)</span>');
+    expect(html).toContain('<svg class="ext-icon"');
+    expect(html).not.toMatch(/[\u2190-\u21FF\u2600-\u27BF]|\p{Extended_Pictographic}/u);
   });
 
   it('keeps same-site absolute links in the tab and makes them relative', async () => {

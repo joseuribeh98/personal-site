@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import { t, localizePath, type Locale, type UiKey } from '../i18n/ui';
 import type { Project } from '../lib/content';
 import { urlFor } from '../lib/sanity';
@@ -27,7 +28,7 @@ const Tag = link ? 'a' : 'div';
       <span class="eyebrow">{tr(`work.kind.${p.kind}` as UiKey)}{p.year ? ` · ${p.year}` : ''}</span>
       <h2 class="text-[26px] leading-tight font-bold tracking-[-0.025em]">{name}</h2>
       <p class="text-[15px] text-ink-mut">{p.summary}</p>
-      {link && <span class="mt-auto pt-2 text-[15px] font-semibold text-accent">{caseHref ? `${tr('work.caseStudy')} →` : `${tr('work.viewSite')} ↗`}</span>}
+      {link && <span class="mt-auto inline-flex items-center gap-1.5 pt-2 text-[15px] font-semibold text-accent">{caseHref ? tr('work.caseStudy') : tr('work.viewSite')}<Icon name={caseHref ? 'arrowRight' : 'external'} /></span>}
       {!link && p.status === 'parked' && <span class="mt-auto pt-2 text-[15px] text-ink-soft">{tr('work.parked')}</span>}
     </div>
   </Tag>

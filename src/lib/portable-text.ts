@@ -1,5 +1,6 @@
 import { toHTML, type PortableTextComponents } from '@portabletext/to-html';
 import { SITE_URL } from '../config/host';
+import { iconSvg } from './icons';
 
 type CodeBlock = { _type: 'code'; _key: string; language?: string; code: string; filename?: string };
 type ImageBlock = { _type: 'image'; _key: string; alt?: string; asset: { _ref: string } };
@@ -90,7 +91,7 @@ export async function renderPortableText(blocks: unknown[], opts: RenderOptions 
         // cited sources should see joseuribe.dev as the referrer.
         return (
           `<a href="${escape(link.href)}" target="_blank" rel="noopener" data-source="${escape(link.host!)}">` +
-          `${children}<span class="ext-icon" aria-hidden="true">↗</span><span class="sr-only"> ${escape(newTabLabel)}</span></a>`
+          `${children}${iconSvg('external', 'ext-icon')}<span class="sr-only"> ${escape(newTabLabel)}</span></a>`
         );
       },
     },

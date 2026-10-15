@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 import Base from '../layouts/Base.astro';
 import HeroFigure from '../components/HeroFigure.astro';
 import ContactBlock from '../components/ContactBlock.astro';
@@ -124,7 +125,7 @@ const business = professionalServiceJsonLd(locale, tr('services.metaDescription'
               </div>
               <h3 class="text-[clamp(26px,2.6vw,36px)] leading-[1.05] tracking-[-0.03em]">{lead.title.split(' — ')[0]}</h3>
               <p class="text-ink-mut">{lead.summary}</p>
-              {link && <span class="text-[15px] font-semibold text-accent">{caseSlugs.includes(lead.slug) ? tr('home.work.case') : tr('home.work.visit')} →</span>}
+              {link && <span class="inline-flex items-center gap-1.5 text-[15px] font-semibold text-accent">{caseSlugs.includes(lead.slug) ? tr('home.work.case') : tr('home.work.visit')}<Icon name={caseSlugs.includes(lead.slug) ? 'arrowRight' : 'external'} /></span>}
             </div>
           </Tag>
         );

@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 import Base from '../layouts/Base.astro';
 import ServiceIcon from '../components/ServiceIcon.astro';
 import ContactBlock from '../components/ContactBlock.astro';
@@ -66,7 +67,7 @@ const steps = [1, 2, 3, 4].map((n) => [tr(`home.flow.s${n}.title` as UiKey), tr(
                 {s.examples.map((e) => (
                   <li>
                     {e.href
-                      ? <a href={e.href} target={e.external ? '_blank' : undefined} rel={e.external ? 'noopener' : undefined} data-outbound={e.external ? e.slug : undefined} class="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2.5 text-[15px] font-semibold transition-colors hover:border-accent hover:text-accent">{e.name}<span aria-hidden="true">{e.external ? '↗' : '→'}</span></a>
+                      ? <a href={e.href} target={e.external ? '_blank' : undefined} rel={e.external ? 'noopener' : undefined} data-outbound={e.external ? e.slug : undefined} class="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2.5 text-[15px] font-semibold transition-colors hover:border-accent hover:text-accent">{e.name}<Icon name={e.external ? 'external' : 'arrowRight'} /></a>
                       : <span class="inline-flex rounded-full border border-line px-4 py-2.5 text-[15px] font-semibold">{e.name}</span>}
                   </li>
                 ))}

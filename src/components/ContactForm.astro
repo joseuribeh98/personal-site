@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import { t, localizePath, type Locale } from '../i18n/ui';
 import { site } from '../config/site';
 interface Props { locale: Locale }
@@ -26,7 +27,7 @@ const redirect = new URL(localizePath('/?sent=1#contact', locale), site.url).hre
   </label>
   <div class="flex flex-wrap items-center gap-4">
     <button type="submit" class="btn-primary" data-submit>{tr('contact.send')}</button>
-    {site.calUrl && <a href={site.calUrl} target="_blank" rel="noopener" class="text-sm text-accent underline underline-offset-4" data-book>{tr('contact.book')} ↗</a>}
+    {site.calUrl && <a href={site.calUrl} target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-sm text-accent underline underline-offset-4" data-book>{tr('contact.book')}<Icon name="external" /></a>}
   </div>
   <p class="hidden text-sm" data-status role="status" aria-live="polite"></p>
 </form>
