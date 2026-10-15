@@ -9,7 +9,7 @@ import { articleJsonLd } from '../lib/seo';
 interface Props { locale: Locale; post: Post }
 const { locale, post } = Astro.props;
 const tr = t(locale);
-const html = await renderPortableText(post.body, { imageUrl: (b) => urlFor(b as any).width(1400).url() });
+const html = await renderPortableText(post.body, { imageUrl: (b) => urlFor(b as any).width(1400).url(), newTabLabel: tr('a11y.newTab') });
 const others = otherTranslations(post, locale);
 const tagLabels = (post.tags ?? []).map((tag) => tr(`tag.${tag}` as UiKey));
 const alternates: Partial<Record<Locale, string>> = { [locale]: localizePath(`/blog/${post.slug}`, locale) };

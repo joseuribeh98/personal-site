@@ -3,6 +3,45 @@ import { renderPortableText } from './portable-text';
 
 const p = (text: string) => ({ _type: 'block', _key: 'k' + text.length, style: 'normal', markDefs: [], children: [{ _type: 'span', _key: 's', text, marks: [] }] });
 
+const linked = (href: string) => ({
+  _type: 'block', _key: 'l', style: 'normal',
+  markDefs: [{ _type: 'link', _key: 'm', href }],
+  children: [{ _type: 'span', _key: 's', text: 'source', marks: ['m'] }],
+});
+
+describe('links', () => {
+  it('opens external links in a new tab with noopener, an icon and a screen-reader hint', async () => {
+    const html = await renderPortableText([linked('https://arxiv.org/abs/1')], { newTabLabel: '(abre en una pestaña nueva)' });
+    expect(html).toContain('href="https://arxiv.org/abs/1"');
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener"');
+    expect(html).toContain('data-source="arxiv.org"');
+    expect(html).toContain('<span class="sr-only"> (abre en una pestaña nueva)</span>');
+  });
+
+  it('keeps same-site absolute links in the tab and makes them relative', async () => {
+    for (const href of ['https://joseuribe.dev/blog/x', 'https://www.joseuribe.dev/blog/x']) {
+      const html = await renderPortableText([linked(href)]);
+      expect(html).toBe('<p><a href="/blog/x">source</a></p>');
+    }
+  });
+
+  it('keeps relative, anchor and mailto links in the tab', async () => {
+    for (const href of ['/services', '#intro', 'mailto:jose@overnatic.us']) {
+      const html = await renderPortableText([linked(href)]);
+      expect(html).not.toContain('target=');
+      expect(html).toContain(`href="${href}"`);
+    }
+  });
+
+  it('drops unsafe or malformed hrefs and keeps the text', async () => {
+    for (const href of ['javascript:alert(1)', 'data:text/html,x', '//evil.example', 'nope']) {
+      const html = await renderPortableText([linked(href)]);
+      expect(html).toBe('<p>source</p>');
+    }
+  });
+});
+
 describe('renderPortableText', () => {
   it('renders paragraphs', async () => {
     const html = await renderPortableText([p('Hello')]);
